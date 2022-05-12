@@ -7,7 +7,7 @@ const Shirt = () => {
       <div className="first-letter:py-20 py-10">
         <div className="flex flex-wrap justify-center md:justify-start px-2 w-[100%]">
           <Link href="/product/polo-code-shit">
-            <div className="md:h-auto lg:w-1/4 border-2 md:border-0 md:bg-white mb-7 p-8 rounded-md cursor-pointer  border-[#8181811a] bg-slate-50">
+            <div className="md:h-auto lg:w-1/4 border-2 md:border-0 md:bg-white mb-7 p-10 rounded-md cursor-pointer  border-[#8181811a] bg-slate-50">
               <a className="block relative rounded overflow-hidden ">
                 <img
                   alt="ecommerce"
@@ -37,7 +37,7 @@ const Shirt = () => {
             </div>
           </Link>
           <Link href="/product/polo-code-shit">
-            <div className="md:h-auto lg:w-1/4 border-2 md:border-0 md:bg-white mb-7 p-8 rounded-md cursor-pointer  border-[#8181811a] bg-slate-50">
+            <div className="md:h-auto lg:w-1/4 border-2 md:border-0 md:bg-white mb-7 p-10 rounded-md cursor-pointer  border-[#8181811a] bg-slate-50">
               <a className="block relative rounded overflow-hidden ">
                 <img
                   alt="ecommerce"
@@ -67,7 +67,7 @@ const Shirt = () => {
             </div>
           </Link>
           <Link href="/product/polo-code-shit">
-            <div className="md:h-auto lg:w-1/4 border-2 md:border-0 md:bg-white mb-7 p-8 rounded-md cursor-pointer  border-[#8181811a] bg-slate-50">
+            <div className="md:h-auto lg:w-1/4 border-2 md:border-0 md:bg-white mb-7 p-10 rounded-md cursor-pointer  border-[#8181811a] bg-slate-50">
               <a className="block relative rounded overflow-hidden ">
                 <img
                   alt="ecommerce"
@@ -97,7 +97,7 @@ const Shirt = () => {
             </div>
           </Link>
           <Link href="/product/polo-code-shit">
-            <div className="md:h-auto lg:w-1/4 border-2 md:border-0 md:bg-white mb-7 p-8 rounded-md cursor-pointer  border-[#8181811a] bg-slate-50">
+            <div className="md:h-auto lg:w-1/4 border-2 md:border-0 md:bg-white mb-7 p-10 rounded-md cursor-pointer  border-[#8181811a] bg-slate-50">
               <a className="block relative rounded overflow-hidden ">
                 <img
                   alt="ecommerce"
@@ -127,7 +127,7 @@ const Shirt = () => {
             </div>
           </Link>
           <Link href="/product/polo-code-shit">
-            <div className="md:h-auto lg:w-1/4 border-2 md:border-0 md:bg-white mb-7 p-8 rounded-md cursor-pointer  border-[#8181811a] bg-slate-50">
+            <div className="md:h-auto lg:w-1/4 border-2 md:border-0 md:bg-white mb-7 p-10 rounded-md cursor-pointer  border-[#8181811a] bg-slate-50">
               <a className="block relative rounded overflow-hidden ">
                 <img
                   alt="ecommerce"
@@ -157,7 +157,7 @@ const Shirt = () => {
             </div>
           </Link>
           <Link href="/product/polo-code-shit">
-            <div className="md:h-auto lg:w-1/4 border-2 md:border-0 md:bg-white mb-7 p-8 rounded-md cursor-pointer  border-[#8181811a] bg-slate-50">
+            <div className="md:h-auto lg:w-1/4 border-2 md:border-0 md:bg-white mb-7 p-10 rounded-md cursor-pointer  border-[#8181811a] bg-slate-50">
               <a className="block relative rounded overflow-hidden ">
                 <img
                   alt="ecommerce"
@@ -187,7 +187,7 @@ const Shirt = () => {
             </div>
           </Link>
           <Link href="/product/polo-code-shit">
-            <div className="md:h-auto lg:w-1/4 border-2 md:border-0 md:bg-white mb-7 p-8 rounded-md cursor-pointer  border-[#8181811a] bg-slate-50">
+            <div className="md:h-auto lg:w-1/4 border-2 md:border-0 md:bg-white mb-7 p-10 rounded-md cursor-pointer  border-[#8181811a] bg-slate-50">
               <a className="block relative rounded overflow-hidden ">
                 <img
                   alt="ecommerce"
