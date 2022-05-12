@@ -18,31 +18,31 @@ const Header = () => {
             </a>
           </Link>
 
-          <Link href="/">
+          <Link href="/categroy/shirt">
             <a className="mr-5 hover:text-gray-900 cursor-pointer text-lg font-bold">
               Shits
             </a>
           </Link>
 
-          <Link href="/">
+          <Link href="/categroy/shoes">
             <a className="mr-5 hover:text-gray-900 cursor-pointer text-lg font-bold">
               Shoes
             </a>
           </Link>
 
-          <Link href="/">
+          <Link href="/categroy/mugs">
             <a className="mr-5 hover:text-gray-900 cursor-pointer text-lg font-bold">
               Mugs
             </a>
           </Link>
 
-          <Link href="/">
+          <Link href="/about-us">
             <a className="mr-5 hover:text-gray-900 cursor-pointer text-lg font-bold">
               About us
             </a>
           </Link>
 
-          <Link href="/">
+          <Link href="/contact-us">
             <a className="mr-5 hover:text-gray-900 cursor-pointer text-lg font-bold">
               Contact us
             </a>
