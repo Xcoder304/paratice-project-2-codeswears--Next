@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
 const Slug = () => {
@@ -17,9 +17,9 @@ const Slug = () => {
     });
 
     if (res.includes(parseInt(userPin))) {
-      setIsService(!isService);
+      setIsService(true);
     } else {
-      setIsService(!isService);
+      setIsService(false);
     }
 
     res.forEach((item) => {
@@ -33,6 +33,12 @@ const Slug = () => {
     });
     setCityName(Name);
   };
+
+  useEffect(() => {
+    if (userPin == 0) {
+      setIsService(null);
+    }
+  }, [userPin]);
 
   console.log("service", isService);
 
@@ -210,7 +216,7 @@ const Slug = () => {
                 </svg>
               </button>
             </div>
-            <div className="flex flex-wrap items-center gap-4 my-3">
+            <div className="flex flex-wrap items-center gap-4 my-3 relative">
               <input
                 type="tel"
                 className="w-[70%] md:w-[50%] py-1 px-2 outline-none border-2 rounded-md border-[#63636365]"
@@ -224,19 +230,21 @@ const Slug = () => {
               >
                 Check The Service
               </button>
-            </div>
-            <div className="text-left w-full">
-              {isService ? (
-                <p className="text-green-600 capitalize font-base">
-                  this product is aviable in {cityName}
-                </p>
-              ) : isService == null ? (
-                ""
-              ) : (
-                <p className="text-red-600 capitalize font-base">
-                  sorry we cant devlivey this project in {cityName}
-                </p>
-              )}
+
+              <div className="text-left w-full absolute -bottom-7 left-0 select-none">
+                {isService ? (
+                  <p className="text-green-600 capitalize font-base">
+                    this product is aviable in {cityName}
+                  </p>
+                ) : isService == null ? (
+                  ""
+                ) : (
+                  <p className="text-red-600 capitalize font-base">
+                    sorry we cant devlivey this project in{" "}
+                    {cityName ? cityName : "in your city"}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>
