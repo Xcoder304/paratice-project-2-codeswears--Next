@@ -61,6 +61,7 @@ const Checkout = () => {
             type="text"
             className="w-[70%] py-2 px-2 outline-none border-2 rounded-md border-[#63636365]"
             placeholder="Enter Voucher Code"
+            autoComplete="off"
           />
           <button className="w-[25%] bg-[#1a1818] text-white px-3 py-[10px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none">
             Apply
