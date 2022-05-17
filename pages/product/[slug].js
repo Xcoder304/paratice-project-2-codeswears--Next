@@ -1,14 +1,19 @@
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useDispatch, useSelector } from "react-redux";
+import { setItems } from "../../Redux/features/AllGlobalStates";
 
-const Slug = () => {
-  const router = useRouter();
-  const { slug } = router.query;
+const Slug = (props) => {
   const [userPin, setUserPin] = useState("");
   const [isService, setIsService] = useState(null);
   const [cityName, setCityName] = useState(null);
+  const [ProductData, setProductData] = useState(props.product);
+
+  const dispatch = useDispatch();
+
+  // for getting the pinCode to city
 
   const CheckThePin = async () => {
+    // fetching the api
     const f = await fetch("http://localhost:3000/api/pincode");
     const data = await f.json();
     let Name = null;
@@ -16,12 +21,14 @@ const Slug = () => {
       return data.code;
     });
 
+    // changing the state if the user entered pin matches the city pin code.
     if (res.includes(parseInt(userPin))) {
       setIsService(true);
     } else {
       setIsService(false);
     }
 
+    // now if the user entered code matches to city pin code then get the city Name
     res.forEach((item) => {
       if (item == userPin) {
         data.filter((x) => {
@@ -40,7 +47,25 @@ const Slug = () => {
     }
   }, [userPin]);
 
-  console.log("service", isService);
+  // for set the product to cart
+  const ADD_TO_CART = () => {
+    dispatch(
+      setItems({
+        id: ProductData.id,
+        name: ProductData.name,
+        brandname: ProductData.brandname,
+        ratings: ProductData.rating,
+        decs: ProductData.decs,
+        sizes: ProductData.sizes,
+        prices: ProductData.prices,
+        slug: ProductData.slug,
+        category: ProductData.category,
+        img: ProductData.img,
+      })
+    );
+
+    alert("added to the cart");
+  };
 
   return (
     <section className="text-gray-600 body-font overflow-hidden">
@@ -49,73 +74,38 @@ const Slug = () => {
           <img
             alt="ecommerce"
             className="lg:w-1/2 w-full lg:h-auto object-top object-center rounded md:px-12 px-28"
-            src="https://m.media-amazon.com/images/I/51WA2-RAtNL._AC_UX522_.jpg"
+            src={ProductData.img}
           />
           <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
             <h2 className="text-sm title-font text-gray-500 tracking-widest">
-              BRAND NAME
+              BRAND NAME-
+              <span className="font-bold text-blue-600 capitalize select-none">
+                {ProductData.brandname}
+              </span>
             </h2>
             <h1 className="text-gray-900 text-3xl title-font font-medium mb-1">
-              {slug}
+              {ProductData.name}
             </h1>
             <div className="flex mb-4">
               <span className="flex items-center">
-                <svg
-                  fill="currentColor"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="w-4 h-4 text-[#1a1818]"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                </svg>
-                <svg
-                  fill="currentColor"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="w-4 h-4 text-[#1a1818]"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                </svg>
-                <svg
-                  fill="currentColor"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="w-4 h-4 text-[#1a1818]"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                </svg>
-                <svg
-                  fill="currentColor"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="w-4 h-4 text-[#1a1818]"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                </svg>
-                <svg
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="w-4 h-4 text-[#1a1818]"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                </svg>
-                <span className="text-gray-600 ml-3">4 Reviews</span>
+                {[...Array(ProductData.rating)].map((x, i) => {
+                  return (
+                    <>
+                      <svg
+                        fill="currentColor"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        className="w-4 h-4 text-[#1a1818]"
+                        viewBox="0 0 24 24"
+                        key={i}
+                      >
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                      </svg>
+                    </>
+                  );
+                })}
               </span>
               <span className="flex ml-3 pl-3 py-2 border-l-2 border-gray-200 space-x-2s">
                 <a className="text-gray-500 cursor-pointer">
@@ -156,14 +146,7 @@ const Slug = () => {
                 </a>
               </span>
             </div>
-            <p className="leading-relaxed">
-              Fam locavore kickstarter distillery. Mixtape chillwave tumeric
-              sriracha taximy chia microdosing tilde DIY. XOXO fam indxgo
-              juiceramps cornhole raw denim forage brooklyn. Everyday carry +1
-              seitan poutine tumeric. Gastropub blue bottle austin listicle
-              pour-over, neutra jean shorts keytar banjo tattooed umami
-              cardigan.
-            </p>
+            <p className="leading-relaxed">{ProductData.decs}</p>
             <div className="flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5">
               <div className="flex">
                 <span className="mr-3">Color</span>
@@ -174,11 +157,14 @@ const Slug = () => {
               <div className="flex ml-6 items-center">
                 <span className="mr-3">Size</span>
                 <div className="relative">
-                  <select className="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10">
-                    <option>SM</option>
-                    <option>M</option>
-                    <option>L</option>
-                    <option>XL</option>
+                  <select className="rounded border uppercase appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10">
+                    {ProductData.sizes.map((data, index) => {
+                      return (
+                        <option key={index} className="uppercase">
+                          {data}
+                        </option>
+                      );
+                    })}
                   </select>
                   <span className="absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center">
                     <svg
@@ -198,9 +184,12 @@ const Slug = () => {
             </div>
             <div className="flex">
               <span className="title-font font-medium text-2xl text-gray-900 select-none">
-                $58.00
+                ${ProductData.prices}
               </span>
-              <button className="flex ml-auto text-white bg-[#1a1818] border-0 py-2 px-6 focus:outline-none hover:opacity-80 rounded">
+              <button
+                className="flex ml-auto text-white bg-[#1a1818] border-0 py-2 px-6 focus:outline-none hover:opacity-80 rounded"
+                onClick={ADD_TO_CART}
+              >
                 Add To Cart
               </button>
               <button className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
@@ -252,5 +241,14 @@ const Slug = () => {
     </section>
   );
 };
+
+export async function getServerSideProps(context) {
+  const { slug } = context.params;
+  let f = await fetch(`http://localhost:3000/api/getproduct?slug=${slug}`);
+  let product = await f.json();
+  return {
+    props: { product }, // will be passed to the page component as props
+  };
+}
 
 export default Slug;
