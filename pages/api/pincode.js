@@ -5,7 +5,7 @@ export default function handler(req, res) {
     { name: "ACHORI", code: 16320 },
     { name: "BADIN", code: 72200 },
     { name: "Pakka Qilla, Hyderabad", code: 17000 },
-    { name: "Latifabad Unit 2", code: 71800 },
+    { name: "Latifabad Unit 2,Hyderabad", code: 71800 },
     { name: "Zamanabad,Karachi", code: 12345 },
     { name: "PECHS, Karachi", code: 74000 },
     { name: "Bata Pur, Lahore", code: 53480 },

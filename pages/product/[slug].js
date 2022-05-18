@@ -73,7 +73,7 @@ const Slug = (props) => {
         <div className="lg:w-4/5 w-full mx-auto flex flex-wrap">
           <img
             alt="ecommerce"
-            className="lg:w-1/2 w-full lg:h-auto object-top object-center rounded md:px-12 px-28"
+            className="lg:w-1/2 w-full lg:h-auto object-contain object-center rounded md:px-12 px-28"
             src={ProductData.img}
           />
           <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
@@ -158,7 +158,7 @@ const Slug = (props) => {
                 <span className="mr-3">Size</span>
                 <div className="relative">
                   <select className="rounded border uppercase appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10">
-                    {ProductData.sizes.map((data, index) => {
+                    {ProductData.sizes?.map((data, index) => {
                       return (
                         <option key={index} className="uppercase">
                           {data}

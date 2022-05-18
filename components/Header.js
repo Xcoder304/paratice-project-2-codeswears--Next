@@ -2,8 +2,12 @@ import React from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import Link from "next/link";
 import Image from "next/image";
+import { selectItems } from "../Redux/features/AllGlobalStates";
+import { useSelector } from "react-redux";
 
 const Header = () => {
+  const items = useSelector(selectItems);
+
   return (
     <header className="text-gray-600 body-font border-b-2 border-gray-100">
       <div className="container flex justify-start flex-wrap p-5 flex-col md:flex-row items-center">
@@ -50,6 +54,9 @@ const Header = () => {
         </nav>
         <Link href="/checkout">
           <button className="inline-flex items-center bg-gray-100 border-0 py-2 px-4 focus:outline-none hover:bg-gray-200 rounded text-base absolute right-0 mx-4 cursor-pointer">
+            <span className="absolute right-0 top-1 w-4 h-4 rounded-full bg-red-600 text-white line leading-[0.99rem] text-[12px] select-none">
+              {items.length}
+            </span>
             <AiOutlineShoppingCart className="text-2xl" />
           </button>
         </Link>
