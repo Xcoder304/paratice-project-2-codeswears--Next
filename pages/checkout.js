@@ -27,11 +27,11 @@ const Checkout = () => {
           {Products.map(({ name, prices, img }, index) => {
             return (
               <div
-                className="items flex mb-4 flex-col md:flex-row justify-center md:justify-between items-start md:items-center py-2 px-3 bg-slate-50 rounded-md border-2 border-[#8181811a]"
+                className="items flex mb-4 flex-col md:flex-row justify-center items-start md:items-center py-2 px-3 bg-slate-50 rounded-md border-2 border-[#8181811a]"
                 key={index}
               >
                 {/*  */}
-                <div className="sec1 w-full md:w-[60%]  flex items-start">
+                <div className="sec1 w-full md:w-[44%]   flex items-start">
                   <img
                     className="object-cover object-center block select-none rounded-md w-[70px] h-auto"
                     src={img}
@@ -41,7 +41,7 @@ const Checkout = () => {
                 </div>
 
                 {/*  */}
-                <div className="sec2 w-full md:w-[15%] text-center my-2">
+                <div className="sec2 w-full md:w-[12%] text-center my-2">
                   <span className="font-bold text-[#c5b522] select-none">
                     ${prices}
                   </span>
@@ -54,13 +54,19 @@ const Checkout = () => {
                 </div>
 
                 {/*  */}
-                <div className="sec3 w-full md:w-[25%] flex items-center">
+                <div className="sec3 w-full md:w-[23.3%]  flex items-center">
                   <button className="inline-flex items-center bg-gray-100 border-0 py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer">
                     <AiOutlineMinus className="text-2xl m-auto" />
                   </button>
                   <span className="font-bold text-gray-800 select-none">1</span>
                   <button className="inline-flex items-center bg-gray-100 border-0 py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer">
                     <MdOutlineAdd className="text-2xl m-auto" />
+                  </button>
+                </div>
+
+                <div className="sec4 w-full md:w-[23.3%]  flex items-center">
+                  <button className="w-full font-bold bg-[#1a1818] text-white py-[7px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none">
+                    Buy Now
                   </button>
                 </div>
               </div>
@@ -94,9 +100,6 @@ const Checkout = () => {
           </span>
           <p className="font-bold text-[#c5b522] select-none">${totalPrice}</p>
         </div>
-        <button className="w-full font-bold mt-5 bg-[#1a1818] text-white px-3 py-[10px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none">
-          Buy Now
-        </button>
       </div>
     </div>
   );

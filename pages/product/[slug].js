@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setItems } from "../../Redux/features/AllGlobalStates";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Slug = (props) => {
   const [userPin, setUserPin] = useState("");
@@ -63,8 +65,15 @@ const Slug = (props) => {
         img: ProductData.img,
       })
     );
-
-    alert("added to the cart");
+    toast.success("Added to the Cart", {
+      position: "bottom-left",
+      autoClose: 1000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+    });
   };
 
   return (
@@ -238,6 +247,17 @@ const Slug = (props) => {
           </div>
         </div>
       </div>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={1000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+      />
     </section>
   );
 };
