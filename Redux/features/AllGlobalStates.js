@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   items: [],
+  itemQty: 0,
 };
 
 export const GlobalSlice = createSlice({
@@ -10,12 +11,11 @@ export const GlobalSlice = createSlice({
   reducers: {
     setItems: (state, action) => {
       state.items.push(action.payload);
-      // state.ItemTotalPrice * state.items.map((d) => d.prices);
+      state.itemQty = state.itemQty + 1;
     },
     removeItems: (state, action) => {
       let index = state.items.indexOf(action.payload);
       state.items.splice(index, 1);
-
       // state.quantity -= action.payload
     },
   },
@@ -24,7 +24,6 @@ export const GlobalSlice = createSlice({
 export const { setItems, removeItems } = GlobalSlice.actions;
 
 export const selectItems = (state) => state.globalStates.items;
-export const selectItemTotalPrice = (state) =>
-  state.globalStates.ItemTotalPrice;
+export const selectItemQty = (state) => state.globalStates.itemQty;
 
 export default GlobalSlice.reducer;

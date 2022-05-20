@@ -53,6 +53,9 @@ const Shirt = ({ products }) => {
                         {products[items].color.includes("yellow") && (
                           <button className="ml-1 bg-yellow-600 rounded-full w-6 h-6 focus:outline-none"></button>
                         )}
+                        {products[items].color.includes("white") && (
+                          <button className="ml-1 bg-gray-200 rounded-full w-6 h-6 focus:outline-none"></button>
+                        )}
                       </div>
                     </span>
                     <div className="mt-2 select-none w-full">

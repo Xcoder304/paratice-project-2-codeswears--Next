@@ -9,7 +9,7 @@ const Header = () => {
   const items = useSelector(selectItems);
 
   return (
-    <header className="text-gray-600 body-font border-b-2 border-gray-100">
+    <header className="text-gray-600 body-font border-b-2 border-gray-100 sticky top-0 z-20 bg-white">
       <div className="container flex justify-start flex-wrap p-5 flex-col md:flex-row items-center">
         <a className="flex title-font font-medium text-gray-900 mb-4 md:mb-0 mr-8 items-center select-none cursor-pointer">
           <Image src="/logo-lg.png" alt="shirt" width={40} height={40} />

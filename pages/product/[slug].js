@@ -1,16 +1,24 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/router";
+import mongoose from "mongoose";
+import Product from "../../modals/Product";
+import { useDispatch } from "react-redux";
 import { setItems } from "../../Redux/features/AllGlobalStates";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const Slug = (props) => {
+const Slug = ({ product, varients }) => {
   const [userPin, setUserPin] = useState("");
   const [isService, setIsService] = useState(null);
   const [cityName, setCityName] = useState(null);
-  const [ProductData, setProductData] = useState(props.product);
-
+  const router = useRouter();
+  const { slug } = router.query;
   const dispatch = useDispatch();
+
+  let [color, setcolor] = useState(product.color);
+  let [size, setsize] = useState(product.size);
+
+  console.log(product, varients);
 
   // for getting the pinCode to city
 
@@ -49,20 +57,27 @@ const Slug = (props) => {
     }
   }, [userPin]);
 
+  const GetNewVarient = async (newcolor, newsize) => {
+    let url = `http://localhost:3000/product/${varients[newcolor][newsize]["slug"]}`;
+    window.location = url;
+  };
+
   // for set the product to cart
+
   const ADD_TO_CART = () => {
     dispatch(
       setItems({
-        id: ProductData.id,
-        name: ProductData.name,
-        brandname: ProductData.brandname,
-        ratings: ProductData.rating,
-        decs: ProductData.decs,
-        sizes: ProductData.sizes,
-        prices: ProductData.prices,
-        slug: ProductData.slug,
-        category: ProductData.category,
-        img: ProductData.img,
+        id: product._id,
+        name: product.title,
+        brandname: product.brandname,
+        decs: product.desc,
+        color: product.color,
+        size: product.size,
+        price: product.price,
+        slug: product.slug,
+        category: product.category,
+        img: product.img,
+        availableQty: product.availableQty,
       })
     );
     toast.success("Added to the Cart", {
@@ -82,39 +97,32 @@ const Slug = (props) => {
         <div className="lg:w-4/5 w-full mx-auto flex flex-wrap">
           <img
             alt="ecommerce"
-            className="lg:w-1/2 w-full lg:h-auto object-contain object-center rounded md:px-12 px-28"
-            src={ProductData.img}
+            className="lg:w-1/2 w-full lg:h-auto object-contain object-center rounded md:px-12 px-28 select-none"
+            src={product.img}
           />
           <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
             <h2 className="text-sm title-font text-gray-500 tracking-widest">
               BRAND NAME-
               <span className="font-bold text-blue-600 capitalize select-none">
-                {ProductData.brandname}
+                {product.brandname ? product.brandname : "UnKown Seller"}
               </span>
             </h2>
             <h1 className="text-gray-900 text-3xl title-font font-medium mb-1">
-              {ProductData.name}
+              {`${product.title}(${product.color}/${product.size})`}
             </h1>
             <div className="flex mb-4">
               <span className="flex items-center">
-                {[...Array(ProductData.rating)].map((x, i) => {
-                  return (
-                    <>
-                      <svg
-                        fill="currentColor"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        className="w-4 h-4 text-[#1a1818]"
-                        viewBox="0 0 24 24"
-                        key={i}
-                      >
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                      </svg>
-                    </>
-                  );
-                })}
+                <svg
+                  fill="currentColor"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  className="w-4 h-4 text-[#1a1818]"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                </svg>
               </span>
               <span className="flex ml-3 pl-3 py-2 border-l-2 border-gray-200 space-x-2s">
                 <a className="text-gray-500 cursor-pointer">
@@ -155,25 +163,103 @@ const Slug = (props) => {
                 </a>
               </span>
             </div>
-            <p className="leading-relaxed">{ProductData.decs}</p>
+            <p className="leading-relaxed">{product?.desc}</p>
             <div className="flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5">
               <div className="flex">
                 <span className="mr-3">Color</span>
-                <button className="border-2 border-gray-300 rounded-full w-6 h-6 focus:outline-none"></button>
-                <button className="border-2 border-gray-300 ml-1 bg-gray-700 rounded-full w-6 h-6 focus:outline-none"></button>
-                <button className="border-2 border-gray-300 ml-1 bg-indigo-500 rounded-full w-6 h-6 focus:outline-none"></button>
+                {Object.keys(varients).includes("black") &&
+                  Object.keys(varients["black"]).includes(size) && (
+                    <button
+                      className={`border-2 ml-1 bg-black rounded-full w-6 h-6 focus:outline-none ${
+                        color == "black" ? "border-blue-700" : "border-0"
+                      }`}
+                      onClick={() => GetNewVarient("black", size)}
+                    ></button>
+                  )}
+                {Object.keys(varients).includes("red") &&
+                  Object.keys(varients["red"]).includes(size) && (
+                    <button
+                      className={`border-2 ml-1 bg-red-600 rounded-full w-6 h-6 focus:outline-none ${
+                        color == "red" ? "border-blue-700" : "border-0"
+                      } `}
+                      onClick={() => GetNewVarient("red", size)}
+                    ></button>
+                  )}
+                {Object.keys(varients).includes("blue") &&
+                  Object.keys(varients["blue"]).includes(size) && (
+                    <button
+                      className={`border-2 ml-1 bg-blue-600 rounded-full w-6 h-6 focus:outline-none ${
+                        color == "blue" ? "border-blue-700" : "border-0"
+                      }`}
+                      onClick={() => GetNewVarient("blue", size)}
+                    ></button>
+                  )}
+                {Object.keys(varients).includes("green") &&
+                  Object.keys(varients["green"]).includes(size) && (
+                    <button
+                      className={`border-2 ml-1 bg-green-600  rounded-full w-6 h-6 focus:outline-none ${
+                        color == "green" ? "border-blue-700" : "border-0"
+                      }`}
+                      onClick={() => GetNewVarient("green", size)}
+                    ></button>
+                  )}
+                {Object.keys(varients).includes("yellow") &&
+                  Object.keys(varients["yellow"]).includes(size) && (
+                    <button
+                      className={`border-2 ml-1 bg-yellow-600 rounded-full w-6 h-6 focus:outline-none ${
+                        color == "yellow" ? "border-blue-700" : "border-0"
+                      }`}
+                      onClick={() => GetNewVarient("yellow", size)}
+                    ></button>
+                  )}
+                {Object.keys(varients).includes("white") &&
+                  Object.keys(varients["white"]).includes(size) && (
+                    <button
+                      className={`border-2 ml-1 bg-gray-200 even:rounded-full w-6 h-6 focus:outline-none ${
+                        color == "white" ? "border-blue-700" : "border-0"
+                      }`}
+                      onClick={() => GetNewVarient("white", size)}
+                    ></button>
+                  )}
               </div>
               <div className="flex ml-6 items-center">
                 <span className="mr-3">Size</span>
                 <div className="relative">
-                  <select className="rounded border uppercase appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10">
-                    {ProductData.sizes?.map((data, index) => {
-                      return (
-                        <option key={index} className="uppercase">
-                          {data}
-                        </option>
-                      );
-                    })}
+                  <select
+                    value={size}
+                    onChange={(e) => GetNewVarient(color, e.target.value)}
+                    className="rounded border uppercase appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10"
+                  >
+                    {Object.keys(varients[color]).includes("sm") && (
+                      <option className="uppercase" value={"sm"}>
+                        sm
+                      </option>
+                    )}
+                    {Object.keys(varients[color]).includes("m") && (
+                      <option className="uppercase" value={"m"}>
+                        m
+                      </option>
+                    )}
+                    {Object.keys(varients[color]).includes("lg") && (
+                      <option className="uppercase" value={"lg"}>
+                        lg
+                      </option>
+                    )}
+                    {Object.keys(varients[color]).includes("xl") && (
+                      <option className="uppercase" value={"xl"}>
+                        xl
+                      </option>
+                    )}
+                    {Object.keys(varients[color]).includes("xxl") && (
+                      <option className="uppercase" value={"xxl"}>
+                        xxl
+                      </option>
+                    )}
+                    {Object.keys(varients[color]).includes("xxxl") && (
+                      <option className="uppercase" value={"xxxl"}>
+                        xxxl
+                      </option>
+                    )}
                   </select>
                   <span className="absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center">
                     <svg
@@ -191,16 +277,36 @@ const Slug = (props) => {
                 </div>
               </div>
             </div>
-            <div className="flex">
-              <span className="title-font font-medium text-2xl text-gray-900 select-none">
-                ${ProductData.prices}
+            <div className="w-full my-1">
+              <span className="font-medium text-gray-800 capitalize select-none text-[17px]">
+                available quantity
               </span>
-              <button
-                className="flex ml-auto text-white bg-[#1a1818] border-0 py-2 px-6 focus:outline-none hover:opacity-80 rounded"
-                onClick={ADD_TO_CART}
+              <span
+                className={`font-bold ml-3 ${
+                  product?.availableQty > 4 ? "text-blue-600" : "text-red-600"
+                } select-none text-[17px]`}
               >
-                Add To Cart
-              </button>
+                ({product?.availableQty})
+              </span>
+            </div>
+            <div className="flex mt-2">
+              <span className="title-font font-medium text-2xl text-gray-900 select-none">
+                ${product?.price}
+              </span>
+
+              <div className="flex ml-auto gap-1">
+                <button className="flex text-white bg-[#1a1818] border-0 py-2 px-6 focus:outline-none hover:opacity-80 rounded">
+                  Buy Now
+                </button>
+
+                <button
+                  className="flex text-white bg-[#1a1818] border-0 py-2 px-6 focus:outline-none hover:opacity-80 rounded"
+                  onClick={ADD_TO_CART}
+                >
+                  Add To Cart
+                </button>
+              </div>
+
               <button className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
                 <svg
                   fill="currentColor"
@@ -263,11 +369,38 @@ const Slug = (props) => {
 };
 
 export async function getServerSideProps(context) {
-  const { slug } = context.params;
-  let f = await fetch(`http://localhost:3000/api/getproduct?slug=${slug}`);
-  let product = await f.json();
+  // ************for local json system************
+
+  // const { slug } = context.params;
+  // let f = await fetch(`http://localhost:3000/api/getproduct?slug=${slug}`);
+  // let product = await f.json();
+
+  // **********fetching the data from database *****************
+  const { slug } = context.query;
+  if (!mongoose.connections[0].readyState) {
+    await mongoose.connect(process.env.MONGO_URI);
+  }
+
+  let product = await Product.findOne({ slug: slug });
+  let varients = await Product.find({ title: product.title });
+  let colorSlugSize = {};
+
+  for (let item of varients) {
+    if (Object.keys(colorSlugSize).includes(item.color)) {
+      colorSlugSize[item.color][item.size] = { slug: item.slug };
+    } else {
+      colorSlugSize[item.color] = {};
+      colorSlugSize[item.color][item.size] = { slug: item.slug };
+    }
+  }
+
+  console.log(JSON.parse(JSON.stringify(colorSlugSize)));
+
   return {
-    props: { product }, // will be passed to the page component as props
+    props: {
+      product: JSON.parse(JSON.stringify(product)),
+      varients: JSON.parse(JSON.stringify(colorSlugSize)),
+    },
   };
 }
 
