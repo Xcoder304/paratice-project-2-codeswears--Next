@@ -7,11 +7,13 @@ import {
   setItems,
   selectItemQty,
 } from "../Redux/features/AllGlobalStates";
+import { useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
 
 const Checkout = () => {
   const Product = useSelector(selectItems);
   const ProductQty = useSelector(selectItemQty);
+  const router = useRouter();
 
   const totalPrice = Product.reduce(
     (amount, item) => parseInt(item.price) + parseInt(amount),
@@ -37,14 +39,17 @@ const Checkout = () => {
               your basket is empty
             </h4>
           ) : (
-            Product.map(({ name, price, img, size, color }, index) => {
+            Product.map(({ name, price, img, size, color, slug }, index) => {
               return (
                 <div
                   className="items flex mb-4 flex-col md:flex-row justify-center items-start md:items-center py-2 px-3 bg-slate-50 rounded-md border-2 border-[#8181811a]"
                   key={index}
                 >
                   {/*  */}
-                  <div className="sec1 w-full md:w-[44%]   flex items-start">
+                  <div
+                    className="sec1 w-full md:w-[44%] flex items-start cursor-pointer"
+                    onClick={() => router.push(`/product/${slug}`)}
+                  >
                     <img
                       className="object-cover object-center block select-none rounded-md w-[70px] h-auto"
                       src={img}

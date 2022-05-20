@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import mongoose from "mongoose";
 import Product from "../../modals/Product";
 import { useDispatch } from "react-redux";
@@ -11,8 +10,6 @@ const Slug = ({ product, varients }) => {
   const [userPin, setUserPin] = useState("");
   const [isService, setIsService] = useState(null);
   const [cityName, setCityName] = useState(null);
-  const router = useRouter();
-  const { slug } = router.query;
   const dispatch = useDispatch();
 
   let [color, setcolor] = useState(product.color);
@@ -222,60 +219,62 @@ const Slug = ({ product, varients }) => {
                     ></button>
                   )}
               </div>
-              <div className="flex ml-6 items-center">
-                <span className="mr-3">Size</span>
-                <div className="relative">
-                  <select
-                    value={size}
-                    onChange={(e) => GetNewVarient(color, e.target.value)}
-                    className="rounded border uppercase appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10"
-                  >
-                    {Object.keys(varients[color]).includes("sm") && (
-                      <option className="uppercase" value={"sm"}>
-                        sm
-                      </option>
-                    )}
-                    {Object.keys(varients[color]).includes("m") && (
-                      <option className="uppercase" value={"m"}>
-                        m
-                      </option>
-                    )}
-                    {Object.keys(varients[color]).includes("lg") && (
-                      <option className="uppercase" value={"lg"}>
-                        lg
-                      </option>
-                    )}
-                    {Object.keys(varients[color]).includes("xl") && (
-                      <option className="uppercase" value={"xl"}>
-                        xl
-                      </option>
-                    )}
-                    {Object.keys(varients[color]).includes("xxl") && (
-                      <option className="uppercase" value={"xxl"}>
-                        xxl
-                      </option>
-                    )}
-                    {Object.keys(varients[color]).includes("xxxl") && (
-                      <option className="uppercase" value={"xxxl"}>
-                        xxxl
-                      </option>
-                    )}
-                  </select>
-                  <span className="absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center">
-                    <svg
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      className="w-4 h-4"
-                      viewBox="0 0 24 24"
+              {size && (
+                <div className="flex ml-6 items-center">
+                  <span className="mr-3">Size</span>
+                  <div className="relative">
+                    <select
+                      value={size}
+                      onChange={(e) => GetNewVarient(color, e.target.value)}
+                      className="rounded border uppercase appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10"
                     >
-                      <path d="M6 9l6 6 6-6"></path>
-                    </svg>
-                  </span>
+                      {Object.keys(varients[color]).includes("sm") && (
+                        <option className="uppercase" value={"sm"}>
+                          sm
+                        </option>
+                      )}
+                      {Object.keys(varients[color]).includes("m") && (
+                        <option className="uppercase" value={"m"}>
+                          m
+                        </option>
+                      )}
+                      {Object.keys(varients[color]).includes("lg") && (
+                        <option className="uppercase" value={"lg"}>
+                          lg
+                        </option>
+                      )}
+                      {Object.keys(varients[color]).includes("xl") && (
+                        <option className="uppercase" value={"xl"}>
+                          xl
+                        </option>
+                      )}
+                      {Object.keys(varients[color]).includes("xxl") && (
+                        <option className="uppercase" value={"xxl"}>
+                          xxl
+                        </option>
+                      )}
+                      {Object.keys(varients[color]).includes("xxxl") && (
+                        <option className="uppercase" value={"xxxl"}>
+                          xxxl
+                        </option>
+                      )}
+                    </select>
+                    <span className="absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center">
+                      <svg
+                        fill="none"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        className="w-4 h-4"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M6 9l6 6 6-6"></path>
+                      </svg>
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
             <div className="w-full my-1">
               <span className="font-medium text-gray-800 capitalize select-none text-[17px]">
@@ -376,10 +375,10 @@ export async function getServerSideProps(context) {
   // let product = await f.json();
 
   // **********fetching the data from database *****************
-  const { slug } = context.query;
   if (!mongoose.connections[0].readyState) {
     await mongoose.connect(process.env.MONGO_URI);
   }
+  const { slug } = context.query;
 
   let product = await Product.findOne({ slug: slug });
   let varients = await Product.find({ title: product.title });
@@ -393,8 +392,6 @@ export async function getServerSideProps(context) {
       colorSlugSize[item.color][item.size] = { slug: item.slug };
     }
   }
-
-  console.log(JSON.parse(JSON.stringify(colorSlugSize)));
 
   return {
     props: {
