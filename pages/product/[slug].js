@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import mongoose from "mongoose";
 import Product from "../../modals/Product";
-import { useDispatch } from "react-redux";
-import { setItems, setItemForBuy } from "../../Redux/features/AllGlobalStates";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setItems,
+  setItemForBuy,
+  selectItems,
+} from "../../Redux/features/AllGlobalStates";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/dist/client/router";
@@ -11,13 +15,12 @@ const Slug = ({ product, varients }) => {
   const [userPin, setUserPin] = useState("");
   const [isService, setIsService] = useState(null);
   const [cityName, setCityName] = useState(null);
+  const products = useSelector(selectItems);
   const router = useRouter();
   const dispatch = useDispatch();
 
   let [color, setcolor] = useState(product.color);
   let [size, setsize] = useState(product.size);
-
-  console.log(product, varients);
 
   // for getting the pinCode to city
 
@@ -81,30 +84,46 @@ const Slug = ({ product, varients }) => {
   // for set the product to cart
 
   const ADD_TO_CART = () => {
-    dispatch(
-      setItems({
-        id: product._id,
-        name: product.title,
-        brandname: product.brandname,
-        decs: product.desc,
-        color: product.color,
-        size: product.size,
-        price: product.price,
-        slug: product.slug,
-        category: product.category,
-        img: product.img,
-        availableQty: product.availableQty,
-      })
-    );
-    toast.success("Added to the Cart", {
-      position: "bottom-left",
-      autoClose: 1000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: true,
-      progress: undefined,
-    });
+    let id = products.map((d) => d.id);
+    console.log("cart", id);
+
+    if (id.includes(product._id)) {
+      toast.error("Product already exist in cart", {
+        position: "bottom-left",
+        autoClose: 1000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+    if (!id.includes(product._id)) {
+      dispatch(
+        setItems({
+          id: product._id,
+          name: product.title,
+          brandname: product.brandname,
+          decs: product.desc,
+          color: product.color,
+          size: product.size,
+          price: product.price,
+          slug: product.slug,
+          category: product.category,
+          img: product.img,
+          availableQty: product.availableQty,
+        })
+      );
+      toast.success("Added to the Cart", {
+        position: "bottom-left",
+        autoClose: 1000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   };
 
   return (
