@@ -53,7 +53,7 @@ const Checkout = () => {
                     <img
                       className="object-cover object-center block select-none rounded-md w-[70px] h-auto"
                       src={img}
-                      alt="shit"
+                      alt="no image"
                     />
                     <h3 className="font-semibold ml-2 mt-2">{`${name} (${color}/${size})`}</h3>
                   </div>

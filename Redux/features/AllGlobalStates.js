@@ -3,6 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   items: [],
   itemQty: 0,
+  Buyitem: {},
+  BuyitemQty: 0,
 };
 
 export const GlobalSlice = createSlice({

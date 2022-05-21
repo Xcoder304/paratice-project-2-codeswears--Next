@@ -5,11 +5,13 @@ import { useDispatch } from "react-redux";
 import { setItems } from "../../Redux/features/AllGlobalStates";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/dist/client/router";
 
 const Slug = ({ product, varients }) => {
   const [userPin, setUserPin] = useState("");
   const [isService, setIsService] = useState(null);
   const [cityName, setCityName] = useState(null);
+  const router = useRouter();
   const dispatch = useDispatch();
 
   let [color, setcolor] = useState(product.color);
@@ -294,7 +296,10 @@ const Slug = ({ product, varients }) => {
               </span>
 
               <div className="flex ml-auto gap-1">
-                <button className="flex text-white bg-[#1a1818] border-0 py-2 px-6 focus:outline-none hover:opacity-80 rounded">
+                <button
+                  className="flex text-white bg-[#1a1818] border-0 py-2 px-6 focus:outline-none hover:opacity-80 rounded"
+                  onClick={() => router.push("/checkout")}
+                >
                   Buy Now
                 </button>
 
