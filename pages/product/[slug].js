@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import mongoose from "mongoose";
 import Product from "../../modals/Product";
 import { useDispatch } from "react-redux";
-import { setItems } from "../../Redux/features/AllGlobalStates";
+import { setItems, setItemForBuy } from "../../Redux/features/AllGlobalStates";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/dist/client/router";
@@ -59,6 +59,22 @@ const Slug = ({ product, varients }) => {
   const GetNewVarient = async (newcolor, newsize) => {
     let url = `http://localhost:3000/product/${varients[newcolor][newsize]["slug"]}`;
     window.location = url;
+  };
+
+  const BUY_THE_PRODUCT = () => {
+    dispatch(
+      setItemForBuy({
+        id: product._id,
+        name: product.title,
+        color: product.color,
+        size: product.size,
+        price: product.price,
+        slug: product.slug,
+        img: product.img,
+      })
+    );
+
+    router.push("/checkout");
   };
 
   // for set the product to cart
@@ -298,7 +314,7 @@ const Slug = ({ product, varients }) => {
               <div className="flex ml-auto gap-1">
                 <button
                   className="flex text-white bg-[#1a1818] border-0 py-2 px-6 focus:outline-none hover:opacity-80 rounded"
-                  onClick={() => router.push("/checkout")}
+                  onClick={BUY_THE_PRODUCT}
                 >
                   Buy Now
                 </button>

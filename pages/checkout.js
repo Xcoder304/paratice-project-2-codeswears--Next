@@ -1,25 +1,109 @@
-import React from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { AiFillDelete, AiOutlineMinus } from "react-icons/ai";
 import { MdOutlineAdd } from "react-icons/md";
-const checkout = () => {
-  return (
+import {
+  removeItemForBuy,
+  selectItemForBuy,
+  selectItemForBuyQty,
+  AddItemForBuyQty,
+  RemoveItemForBuyQty,
+} from "../Redux/features/AllGlobalStates";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useSelector, useDispatch } from "react-redux";
+import { useRouter } from "next/router";
+
+const Checkout = () => {
+  const itemforbuy = useSelector(selectItemForBuy);
+  const QtyOfitem = useSelector(selectItemForBuyQty);
+
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const RedirectBack = () => {
+    router.back();
+  };
+
+  const DELECT_ITEM = () => {
+    RedirectBack();
+
+    setTimeout(() => {
+      dispatch(removeItemForBuy());
+
+      toast.success("Item Removed", {
+        position: "bottom-left",
+        autoClose: 1000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+    }, 1000);
+  };
+
+  useLayoutEffect(() => {
+    if (itemforbuy == null) {
+      RedirectBack();
+    }
+  }, [itemforbuy]);
+
+  return itemforbuy == null ? (
+    <h4 className="font-bold text-gray-800 text-2xl mx-10 my-2 capitalize select-none py-28">
+      no item founded
+    </h4>
+  ) : (
     <div className="w-full px-2 py-6">
-      <div className="product ">
-        <div className="item w-[50%] mx-auto md:mx-0 flex p-2 items-center justify-center md:justify-between  flex-wrap bg-slate-50 rounded-md border-2 border-[#59c9259a]">
-          <div className="sec1 flex items-start cursor-pointer mb-3">
+      <div className="product">
+        <div className="item w-[60%] mx-auto md:mx-0 flex p-2 items-center justify-center md:justify-between  flex-wrap bg-slate-50 rounded-md border-2 border-[#59c9259a]">
+          <div
+            className="sec1 flex items-start cursor-pointer mb-3"
+            onClick={() => router.push(`/product/${itemforbuy?.slug}`)}
+          >
             <img
               className="object-contain object-contain select-none rounded-md w-[70px] h-auto"
-              src="https://m.media-amazon.com/images/I/410vSnAd61S._AC_UX522_.jpg"
+              src={itemforbuy?.img}
               alt="no image"
             />
-            <h3 className="font-semibold ml-2 mt-2">black polo shirt</h3>
+            <div className="flex flex-col items-start justify-start">
+              <div className="flex items-center">
+                <h3 className="font-semibold ml-2 mt-2">
+                  {itemforbuy?.name} -
+                </h3>
+                <span className="font-semibold ml-1 mt-2 uppercase">
+                  {itemforbuy?.size}
+                </span>
+              </div>
+              <div className="mt-2">
+                {itemforbuy.color == "black" && (
+                  <button className="border-2 ml-1 bg-black rounded-full w-6 h-6 focus:outline-non"></button>
+                )}
+                {itemforbuy.color == "red" && (
+                  <button className="border-2 ml-1 bg-red-600 rounded-full w-6 h-6 focus:outline-non"></button>
+                )}
+                {itemforbuy.color == "green" && (
+                  <button className="border-2 ml-1 bg-green-600 rounded-full w-6 h-6 focus:outline-non"></button>
+                )}
+                {itemforbuy.color == "yellow" && (
+                  <button className="border-2 ml-1 bg-yellow-600 rounded-full w-6 h-6 focus:outline-non"></button>
+                )}
+                {itemforbuy.color == "white" && (
+                  <button className="border-2 ml-1 bg-gray-200 rounded-full w-6 h-6 focus:outline-non"></button>
+                )}
+                {itemforbuy.color == "blue" && (
+                  <button className="border-2 ml-1 bg-blue-600 rounded-full w-6 h-6 focus:outline-non"></button>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="sec2 flex flex-col text-center mb-3">
             <span className="capitalize text-gray-700 font-medium text-lg">
               price
             </span>
-            <span className="font-bold text-[#c5b522] select-none">$20</span>
+            <span className="font-bold text-[#c5b522] select-none">
+              ${itemforbuy?.price}
+            </span>
           </div>
 
           <div className="sec3 flex flex-col text-center mb-3">
@@ -27,19 +111,28 @@ const checkout = () => {
               product quantity
             </span>
             <div className="flex w-full flex-row items-center">
-              <button className="inline-flex items-center bg-gray-100 border-0 py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer">
+              <button
+                className="inline-flex items-center bg-gray-100 border-0 py-1 px-2  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
+                onClick={() => dispatch(RemoveItemForBuyQty())}
+              >
                 <AiOutlineMinus className="text-2xl m-auto" />
               </button>
               <span className="font-bold text-lg text-blue-700 select-none">
-                (3)
+                {QtyOfitem}
               </span>
-              <button className="inline-flex items-center bg-gray-100 border-0 py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer">
+              <button
+                className="inline-flex items-center bg-gray-100 border-0 py-1 px-2  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
+                onClick={() => dispatch(AddItemForBuyQty())}
+              >
                 <MdOutlineAdd className="text-2xl m-auto" />
               </button>
             </div>
           </div>
 
-          <button className="w-[50%] md:w-[100px] inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-3 focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer">
+          <button
+            className="w-[50%] md:w-[100px] inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-3 focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
+            onClick={DELECT_ITEM}
+          >
             <AiFillDelete className="text-2xl m-auto" />
           </button>
         </div>
@@ -99,8 +192,19 @@ const checkout = () => {
           </button>
         </form>
       </div>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={1000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+      />
     </div>
   );
 };
 
-export default checkout;
+export default Checkout;
