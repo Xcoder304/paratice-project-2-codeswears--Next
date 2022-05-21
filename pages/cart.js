@@ -6,6 +6,7 @@ import {
   removeItems,
   setItems,
   selectItemQty,
+  setItemForBuy,
 } from "../Redux/features/AllGlobalStates";
 import { useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
@@ -23,6 +24,30 @@ const Checkout = () => {
 
   const DelectItem = () => {
     dispatch(removeItems());
+  };
+
+  const BUY_THE_PRODUCT = () => {
+    const item = {};
+    Product.forEach((data) => {
+      item = {
+        ...data,
+      };
+    });
+    console.log(item);
+    dispatch(
+      setItemForBuy({
+        id: item.id,
+        name: item.name,
+        color: item.color,
+        size: item.size,
+        price: item.price,
+        slug: item.slug,
+        img: item.img,
+        availableQty: item.availableQty,
+      })
+    );
+
+    router.push("/checkout");
   };
 
   return (
@@ -85,7 +110,10 @@ const Checkout = () => {
                   </div>
 
                   <div className="sec4 w-full md:w-[23.3%]  flex items-center">
-                    <button className="w-full font-bold bg-[#1a1818] text-white py-[7px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none">
+                    <button
+                      className="w-full font-bold bg-[#1a1818] text-white py-[7px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none"
+                      onClick={BUY_THE_PRODUCT}
+                    >
                       Buy Now
                     </button>
                   </div>

@@ -19,6 +19,8 @@ const Checkout = () => {
   const QtyOfitem = useSelector(selectItemForBuyQty);
   const Messages = useSelector(selectItemForBuyMsg);
 
+  console.log(itemforbuy);
+
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -57,7 +59,7 @@ const Checkout = () => {
   ) : (
     <div className="w-full px-2 py-6">
       <div className="product">
-        <div className="item w-[60%] mx-auto md:mx-0 flex p-2 items-center justify-center md:justify-between  flex-wrap bg-slate-50 rounded-md border-2 border-[#59c9259a]">
+        <div className="item w-[80%] mx-auto md:mx-0 flex p-2 items-center justify-center md:justify-between  flex-wrap bg-slate-50 rounded-md border-2 border-[#59c9259a]">
           <div
             className="sec1 flex items-start cursor-pointer mb-3"
             onClick={() => router.push(`/product/${itemforbuy?.slug}`)}
