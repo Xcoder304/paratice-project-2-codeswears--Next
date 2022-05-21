@@ -71,6 +71,7 @@ const Slug = ({ product, varients }) => {
         price: product.price,
         slug: product.slug,
         img: product.img,
+        availableQty: product.availableQty,
       })
     );
 

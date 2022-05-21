@@ -7,6 +7,7 @@ import {
   selectItemForBuyQty,
   AddItemForBuyQty,
   RemoveItemForBuyQty,
+  selectItemForBuyMsg,
 } from "../Redux/features/AllGlobalStates";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -16,6 +17,7 @@ import { useRouter } from "next/router";
 const Checkout = () => {
   const itemforbuy = useSelector(selectItemForBuy);
   const QtyOfitem = useSelector(selectItemForBuyQty);
+  const Messages = useSelector(selectItemForBuyMsg);
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -106,13 +108,17 @@ const Checkout = () => {
             </span>
           </div>
 
-          <div className="sec3 flex flex-col text-center mb-3">
+          <div className="sec3 flex flex-col text-center mb-3 select-none">
             <span className="capitalize text-gray-700 font-medium text-lg">
               product quantity
             </span>
             <div className="flex w-full flex-row items-center">
               <button
-                className="inline-flex items-center bg-gray-100 border-0 py-1 px-2  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
+                className={`inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-1 px-2  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer ${
+                  Messages.showErr
+                    ? ""
+                    : "cursor-not-allowed opacity-50 pointer-events-none"
+                }`}
                 onClick={() => dispatch(RemoveItemForBuyQty())}
               >
                 <AiOutlineMinus className="text-2xl m-auto" />
@@ -121,7 +127,11 @@ const Checkout = () => {
                 {QtyOfitem}
               </span>
               <button
-                className="inline-flex items-center bg-gray-100 border-0 py-1 px-2  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
+                className={`inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-1 px-2  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer ${
+                  QtyOfitem > itemforbuy?.availableQty - 1
+                    ? "cursor-not-allowed opacity-50 pointer-events-none"
+                    : ""
+                }`}
                 onClick={() => dispatch(AddItemForBuyQty())}
               >
                 <MdOutlineAdd className="text-2xl m-auto" />
