@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { selectItems } from "../Redux/features/AllGlobalStates";
 import { useSelector } from "react-redux";
+import { FaUser } from "react-icons/fa";
 
 const Header = () => {
   const items = useSelector(selectItems);
@@ -52,14 +53,22 @@ const Header = () => {
             </a>
           </Link>
         </nav>
-        <Link href="/cart">
-          <button className="inline-flex items-center bg-gray-100 border-0 py-2 px-4 focus:outline-none hover:bg-gray-200 rounded text-base absolute right-0 mx-4 cursor-pointer">
-            <span className="absolute right-0 top-1 w-4 h-4 rounded-full bg-red-600 text-white line leading-[0.99rem] text-[12px] select-none">
-              {items.length}
-            </span>
-            <AiOutlineShoppingCart className="text-2xl" />
-          </button>
-        </Link>
+
+        <div className="flex items-center absolute right-0">
+          <Link href="/login">
+            <button className="flex justify-center items-center relative bg-gray-100 border-0 w-[40px] h-[40px] focus:outline-none hover:bg-gray-200 rounded-full text-base cursor-pointer">
+              <FaUser className="text-[18px]" />
+            </button>
+          </Link>
+          <Link href="/cart">
+            <button className="inline-flex items-center bg-gray-100 border-0 py-2 px-4 focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer">
+              <span className="absolute right-[17px] top-1 w-4 h-4 rounded-full bg-red-600 text-white line leading-[0.99rem] text-[12px] select-none">
+                {items.length}
+              </span>
+              <AiOutlineShoppingCart className="text-2xl" />
+            </button>
+          </Link>
+        </div>
       </div>
     </header>
   );

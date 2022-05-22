@@ -1,8 +1,7 @@
+import { Schema, models, model } from "mongoose";
 const mongoose = require("mongoose");
 
-// main().catch((err) => console.log(err));
-
-const OrderSchema = new mongoose.Schema(
+const OrderSchema = new Schema(
   {
     userId: { type: String, required: true },
     products: [
@@ -18,6 +17,4 @@ const OrderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-mongoose.models = {};
-
-export default mongoose.model("Order", OrderSchema);
+export default models.Order || model("Order", OrderSchema);
