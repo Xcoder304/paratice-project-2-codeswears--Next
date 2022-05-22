@@ -44,8 +44,11 @@ const Login = () => {
         draggable: true,
         progress: undefined,
       });
+      setTimeout(() => {
+        router.push("/");
+      }, 1200);
     } else {
-      toast.success(res.error, {
+      toast.error(res.error, {
         position: "bottom-left",
         autoClose: 1000,
         hideProgressBar: true,
@@ -55,10 +58,6 @@ const Login = () => {
         progress: undefined,
       });
     }
-
-    setTimeout(() => {
-      router.push("/");
-    }, 1200);
   };
 
   return (
@@ -202,12 +201,5 @@ const Login = () => {
     </div>
   );
 };
-
-export async function getServerSideProps(context) {
-  console.log(process.env.DB_HOST);
-  return {
-    props: {}, // will be passed to the page component as props
-  };
-}
 
 export default Login;

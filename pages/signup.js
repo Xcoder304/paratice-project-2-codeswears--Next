@@ -27,7 +27,7 @@ const Signup = () => {
       password: userDetails.password,
     };
 
-    let f = await fetch("http://localhost:3000/api/signup", {
+    let f = await fetch(`${process.env.HOSTING_NAME}/api/signup`, {
       method: "POST", // or 'PUT'
       headers: {
         "Content-Type": "application/json",

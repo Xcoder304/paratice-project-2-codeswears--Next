@@ -26,7 +26,7 @@ const Slug = ({ product, varients }) => {
 
   const CheckThePin = async () => {
     // fetching the api
-    const f = await fetch("http://localhost:3000/api/pincode");
+    const f = await fetch(`${process.env.HOSTING_NAME}/api/pincode`);
     const data = await f.json();
     let Name = null;
     const res = data.map((data) => {
