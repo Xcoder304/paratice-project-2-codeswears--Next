@@ -1,10 +1,70 @@
-import React from "react";
+import { useState } from "react";
 import Link from "next/link";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/router";
+
 const Login = () => {
+  const ResetuserDetails = {
+    email: "",
+    password: "",
+  };
+  const [userDetails, setuserDetails] = useState({
+    email: "",
+    password: "",
+  });
+
+  const router = useRouter();
+
+  const LOGIN_THE_USER = async (e) => {
+    e.preventDefault();
+
+    const data = {
+      email: userDetails.email,
+      password: userDetails.password,
+    };
+
+    let f = await fetch(`${process.env.HOSTING_NAME}/api/login`, {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    let res = await f.json();
+
+    setuserDetails(ResetuserDetails);
+    if (res.success) {
+      toast.success("You Successfull Logged in", {
+        position: "bottom-left",
+        autoClose: 1000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+    } else {
+      toast.success(res.error, {
+        position: "bottom-left",
+        autoClose: 1000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+
+    setTimeout(() => {
+      router.push("/");
+    }, 1200);
+  };
+
   return (
     <div className="w-full grid place-content-center py-10">
       <div className="block p-6 rounded-lg shadow-lg bg-white w-full md:w-[400px] py-10 border-[1px] border-[#1a181848]">
-        <form>
+        <form onSubmit={LOGIN_THE_USER} method="POST">
           <div className="form-group mb-6">
             <label
               htmlFor="exampleInputEmail2"
@@ -32,6 +92,11 @@ const Login = () => {
               id="exampleInputEmail2"
               aria-describedby="emailHelp"
               placeholder="Enter email"
+              value={userDetails.email}
+              name="email"
+              onChange={(e) =>
+                setuserDetails({ ...userDetails, email: e.target.value })
+              }
             />
           </div>
           <div className="form-group mb-6">
@@ -59,6 +124,11 @@ const Login = () => {
         focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
               id="exampleInputPassword2"
               placeholder="Password"
+              value={userDetails.password}
+              name="password"
+              onChange={(e) =>
+                setuserDetails({ ...userDetails, password: e.target.value })
+              }
             />
           </div>
           <div className="flex justify-between items-center mb-6">
@@ -118,8 +188,26 @@ const Login = () => {
           </p>
         </form>
       </div>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={1000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+      />
     </div>
   );
 };
+
+export async function getServerSideProps(context) {
+  console.log(process.env.DB_HOST);
+  return {
+    props: {}, // will be passed to the page component as props
+  };
+}
 
 export default Login;

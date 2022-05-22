@@ -1,14 +1,64 @@
-import React from "react";
+import { useState } from "react";
 import Link from "next/link";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Signup = () => {
+  const ResetuserDetails = {
+    firstname: "",
+    lastname: "",
+    email: "",
+    password: "",
+  };
+
+  const [userDetails, setuserDetails] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    password: "",
+  });
+
+  const SIGN_THE_USER = async (e) => {
+    e.preventDefault();
+
+    const data = {
+      name: `${userDetails.firstname} ${userDetails.lastname}`,
+      email: userDetails.email,
+      password: userDetails.password,
+    };
+
+    let f = await fetch("http://localhost:3000/api/signup", {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    try {
+      let res = await f.json();
+    } catch (err) {
+      console.error("error", err);
+    }
+
+    setuserDetails(ResetuserDetails);
+    toast.success("Your Account Has Been Created", {
+      position: "bottom-left",
+      autoClose: 1000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+    });
+  };
+
   return (
     <div className="w-full grid place-content-center py-10">
       <div className="p-6 rounded-lg shadow-lg bg-white w-full max-w-md py-10 border-[1px] border-[#1a181848]">
         <h3 className="text-gray-700 w-full text-center font-bold text-3xl capitalize mb-3">
           Register Now
         </h3>
-        <form>
+        <form onSubmit={SIGN_THE_USER} method="POST">
           <div className="grid grid-cols-2 gap-4">
             <div className="form-group mb-6">
               <input
@@ -31,6 +81,11 @@ const Signup = () => {
                 id="exampleInput123"
                 aria-describedby="emailHelp123"
                 placeholder="First name"
+                value={userDetails.firstname}
+                name="firstname"
+                onChange={(e) =>
+                  setuserDetails({ ...userDetails, firstname: e.target.value })
+                }
               />
             </div>
             <div className="form-group mb-6">
@@ -54,6 +109,11 @@ const Signup = () => {
                 id="exampleInput124"
                 aria-describedby="emailHelp124"
                 placeholder="Last name"
+                value={userDetails.lastname}
+                name="lastname"
+                onChange={(e) =>
+                  setuserDetails({ ...userDetails, lastname: e.target.value })
+                }
               />
             </div>
           </div>
@@ -76,6 +136,11 @@ const Signup = () => {
         focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
               id="exampleInput125"
               placeholder="Email address"
+              value={userDetails.email}
+              name="email"
+              onChange={(e) =>
+                setuserDetails({ ...userDetails, email: e.target.value })
+              }
             />
           </div>
           <div className="form-group mb-6">
@@ -97,6 +162,11 @@ const Signup = () => {
         focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
               id="exampleInput126"
               placeholder="Password"
+              value={userDetails.password}
+              name="password"
+              onChange={(e) =>
+                setuserDetails({ ...userDetails, password: e.target.value })
+              }
             />
           </div>
 
@@ -137,6 +207,17 @@ const Signup = () => {
           </p>
         </form>
       </div>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={1000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+      />
     </div>
   );
 };
