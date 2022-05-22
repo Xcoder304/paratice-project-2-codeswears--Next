@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { AiFillDelete, AiOutlineMinus } from "react-icons/ai";
 import { MdOutlineAdd } from "react-icons/md";
 import {
@@ -7,7 +7,6 @@ import {
   selectItemForBuyQty,
   AddItemForBuyQty,
   RemoveItemForBuyQty,
-  selectItemForBuyMsg,
 } from "../Redux/features/AllGlobalStates";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,9 +16,13 @@ import { useRouter } from "next/router";
 const Checkout = () => {
   const itemforbuy = useSelector(selectItemForBuy);
   const QtyOfitem = useSelector(selectItemForBuyQty);
-  const Messages = useSelector(selectItemForBuyMsg);
-
-  console.log(itemforbuy);
+  const [hideQtybtn, sethideQtybtn] = useState({
+    addbtn: false,
+    removebtn: false,
+  });
+  const [userSelectedQty, setuserSelectedQty] = useState(
+    itemforbuy?.userSelectedQty
+  );
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -50,7 +53,33 @@ const Checkout = () => {
     if (itemforbuy == null) {
       RedirectBack();
     }
-  }, [itemforbuy]);
+  }, [userSelectedQty]);
+
+  useLayoutEffect(() => {
+    if (userSelectedQty) {
+      if (userSelectedQty <= itemforbuy?.availableQty) {
+        sethideQtybtn({ addbtn: false, removebtn: true });
+      }
+      if (userSelectedQty > 1) {
+        sethideQtybtn({ addbtn: false, removebtn: false });
+      }
+      if (userSelectedQty >= itemforbuy?.availableQty) {
+        sethideQtybtn({ addbtn: true, removebtn: false });
+      }
+    } else {
+      if (QtyOfitem <= itemforbuy?.availableQty) {
+        sethideQtybtn({ addbtn: false, removebtn: true });
+      }
+      if (QtyOfitem > 1) {
+        sethideQtybtn({ addbtn: false, removebtn: false });
+      }
+      if (QtyOfitem >= itemforbuy?.availableQty) {
+        sethideQtybtn({ addbtn: true, removebtn: false });
+      }
+    }
+  }, [userSelectedQty, QtyOfitem]);
+
+  console.log(userSelectedQty);
 
   return itemforbuy == null ? (
     <h4 className="font-bold text-gray-800 text-2xl mx-10 my-2 capitalize select-none py-28">
@@ -117,24 +146,32 @@ const Checkout = () => {
             <div className="flex w-full flex-row items-center">
               <button
                 className={`inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-1 px-2  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer ${
-                  Messages.showErr
-                    ? ""
-                    : "cursor-not-allowed opacity-50 pointer-events-none"
+                  hideQtybtn.removebtn
+                    ? "cursor-not-allowed opacity-50 pointer-events-none"
+                    : ""
                 }`}
-                onClick={() => dispatch(RemoveItemForBuyQty())}
+                onClick={() => {
+                  userSelectedQty
+                    ? setuserSelectedQty(userSelectedQty - 1)
+                    : dispatch(RemoveItemForBuyQty());
+                }}
               >
                 <AiOutlineMinus className="text-2xl m-auto" />
               </button>
               <span className="font-bold text-lg text-blue-700 select-none">
-                {QtyOfitem}
+                {userSelectedQty ? userSelectedQty : QtyOfitem}
               </span>
               <button
                 className={`inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-1 px-2  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer ${
-                  QtyOfitem > itemforbuy?.availableQty - 1
+                  hideQtybtn.addbtn
                     ? "cursor-not-allowed opacity-50 pointer-events-none"
                     : ""
                 }`}
-                onClick={() => dispatch(AddItemForBuyQty())}
+                onClick={() => {
+                  userSelectedQty
+                    ? setuserSelectedQty(userSelectedQty + 1)
+                    : dispatch(AddItemForBuyQty());
+                }}
               >
                 <MdOutlineAdd className="text-2xl m-auto" />
               </button>

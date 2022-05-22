@@ -5,7 +5,6 @@ const initialState = {
   itemQty: 0,
   itemForBuy: null,
   itemForBuyQty: 1,
-  itemForBuyMsg: { showErr: false, msg: "" },
 };
 
 export const GlobalSlice = createSlice({
@@ -30,25 +29,12 @@ export const GlobalSlice = createSlice({
     },
     AddItemForBuyQty: (state, action) => {
       state.itemForBuyQty = state.itemForBuyQty + 1;
-
-      if (state.itemForBuyQty > 1) {
-        state.itemForBuyMsg.showErr = true;
-      }
-
-      if (state.itemForBuyQty >= state.itemForBuy.availableQty) {
-        state.itemForBuyMsg.showErr = true;
-        state.itemForBuyMsg.msg = "Sorry More Product ar not aviable right Now";
-      }
     },
     RemoveItemForBuyQty: (state, action) => {
       state.itemForBuyQty = state.itemForBuyQty - 1;
 
       if (state.itemForBuyQty <= 1) {
         state.itemForBuyQty = 1;
-        state.itemForBuyMsg.showErr = false;
-      }
-      if (state.itemForBuyQty <= state.itemForBuy.availableQty) {
-        state.itemForBuyMsg.msg = "";
       }
     },
   },

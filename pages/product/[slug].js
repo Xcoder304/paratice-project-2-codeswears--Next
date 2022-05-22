@@ -85,7 +85,6 @@ const Slug = ({ product, varients }) => {
 
   const ADD_TO_CART = () => {
     let id = products.map((d) => d.id);
-    console.log("cart", id);
 
     if (id.includes(product._id)) {
       toast.error("Product already exist in cart", {
@@ -114,6 +113,7 @@ const Slug = ({ product, varients }) => {
           availableQty: product.availableQty,
         })
       );
+
       toast.success("Added to the Cart", {
         position: "bottom-left",
         autoClose: 1000,

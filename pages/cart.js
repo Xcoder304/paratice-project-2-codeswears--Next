@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { AiFillDelete, AiOutlineMinus } from "react-icons/ai";
 import { MdOutlineAdd } from "react-icons/md";
 import {
   selectItems,
   removeItems,
-  setItems,
-  selectItemQty,
   setItemForBuy,
 } from "../Redux/features/AllGlobalStates";
 import { useRouter } from "next/router";
@@ -13,7 +11,11 @@ import { useSelector, useDispatch } from "react-redux";
 
 const Checkout = () => {
   const Product = useSelector(selectItems);
-  const ProductQty = useSelector(selectItemQty);
+  const [Qty, setQty] = useState(1);
+  const [hideQtybtn, sethideQtybtn] = useState({
+    addbtn: false,
+    removebtn: false,
+  });
   const router = useRouter();
 
   const totalPrice = Product.reduce(
@@ -33,7 +35,6 @@ const Checkout = () => {
         ...data,
       };
     });
-    console.log(item);
     dispatch(
       setItemForBuy({
         id: item.id,
@@ -44,11 +45,31 @@ const Checkout = () => {
         slug: item.slug,
         img: item.img,
         availableQty: item.availableQty,
+        userSelectedQty: Qty,
       })
     );
-
     router.push("/checkout");
   };
+
+  useLayoutEffect(() => {
+    const itemQty = {};
+    Product.forEach((data) => {
+      itemQty = data.availableQty;
+    });
+    if (Qty < 1) {
+      setQty(1);
+    }
+
+    if (Qty <= itemQty) {
+      sethideQtybtn({ addbtn: false, removebtn: true });
+    }
+    if (Qty > 1) {
+      sethideQtybtn({ addbtn: false, removebtn: false });
+    }
+    if (Qty >= itemQty) {
+      sethideQtybtn({ addbtn: true, removebtn: false });
+    }
+  }, [Qty]);
 
   return (
     <div
@@ -98,13 +119,27 @@ const Checkout = () => {
 
                   {/*  */}
                   <div className="sec3 w-full md:w-[23.3%]  flex items-center">
-                    <button className="inline-flex items-center bg-gray-100 border-0 py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer">
+                    <button
+                      className={`inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer ${
+                        hideQtybtn.removebtn
+                          ? "cursor-not-allowed opacity-50 pointer-events-none"
+                          : ""
+                      } `}
+                      onClick={() => setQty(Qty - 1)}
+                    >
                       <AiOutlineMinus className="text-2xl m-auto" />
                     </button>
                     <span className="font-bold text-gray-800 select-none">
-                      {Product.length}
+                      {Qty}
                     </span>
-                    <button className="inline-flex items-center bg-gray-100 border-0 py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer">
+                    <button
+                      className={`inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer ${
+                        hideQtybtn.addbtn
+                          ? "cursor-not-allowed opacity-50 pointer-events-none"
+                          : ""
+                      }`}
+                      onClick={() => setQty(Qty + 1)}
+                    >
                       <MdOutlineAdd className="text-2xl m-auto" />
                     </button>
                   </div>
