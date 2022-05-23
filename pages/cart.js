@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { AiFillDelete, AiOutlineMinus } from "react-icons/ai";
 import { MdOutlineAdd } from "react-icons/md";
 import {
@@ -22,7 +22,15 @@ const Checkout = () => {
     (amount, item) => parseInt(item.price) + parseInt(amount),
     +0
   );
+  let userValue = localStorage.getItem("token");
   const dispatch = useDispatch();
+
+  useLayoutEffect(() => {
+    if (userValue == null) {
+      router.push("/login");
+    }
+  }, [userValue]);
+  console.log("😁", userValue);
 
   const DelectItem = () => {
     dispatch(removeItems());

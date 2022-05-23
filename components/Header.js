@@ -1,13 +1,37 @@
-import React from "react";
+import { useState } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import Link from "next/link";
 import Image from "next/image";
 import { selectItems } from "../Redux/features/AllGlobalStates";
-import { useSelector } from "react-redux";
+import { selectuserVal, setUserVal } from "../Redux/features/UserState";
+import { useSelector, useDispatch } from "react-redux";
+import { useRouter } from "next/dist/client/router";
 import { FaUser } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Header = () => {
+  const user = useSelector(selectuserVal);
+  const [key, setkey] = useState(0);
   const items = useSelector(selectItems);
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const LOGOUT_THE_USER = () => {
+    dispatch(setUserVal(null));
+    localStorage.removeItem("token");
+    // toast.success("Logout Sucessfully", {
+    //   position: "bottom-left",
+    //   autoClose: 1000,
+    //   hideProgressBar: true,
+    //   closeOnClick: true,
+    //   pauseOnHover: false,
+    //   draggable: true,
+    //   progress: undefined,
+    // });
+  };
+
+  console.log(key);
 
   return (
     <header className="text-gray-600 body-font border-b-2 border-gray-100 sticky top-0 z-20 bg-white">
@@ -55,11 +79,45 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center absolute right-0">
-          <Link href="/login">
-            <button className="flex justify-center items-center relative bg-gray-100 border-0 w-[40px] h-[40px] focus:outline-none hover:bg-gray-200 rounded-full text-base cursor-pointer">
-              <FaUser className="text-[18px]" />
+          {user == null ? (
+            <button
+              className="flex text-white bg-[#1a1818] border-0 py-2 px-6 focus:outline-none hover:opacity-80 rounded"
+              onClick={() => router.push("/login")}
+            >
+              Login
             </button>
-          </Link>
+          ) : (
+            <>
+              <div className="group inline-block relative">
+                <button className="flex justify-center items-center relative bg-gray-100 border-0 w-[50px] h-[50px] focus:outline-none hover:bg-gray-200 rounded-full text-base cursor-pointer">
+                  <span className="mr-1">
+                    <FaUser className="text-[18px]" />
+                  </span>
+                </button>
+                <ul className="absolute hidden right-0 text-gray-700 pt-1 w-[160px] group-hover:block bg-white shadow-md">
+                  <li className="item">
+                    <a className="rounded-t font-bold my-2 text-gray-700 capitalize hover:bg-slate-200 py-3 px-4 block whitespace-no-wrap cursor-pointer">
+                      My Account
+                    </a>
+                  </li>
+                  <li className="item">
+                    <a className="rounded-t font-bold my-2 text-gray-700 capitalize hover:bg-slate-200 py-3 px-4 block whitespace-no-wrap cursor-pointer">
+                      My Orders
+                    </a>
+                  </li>
+                  <li className="item">
+                    <a
+                      className="rounded-t font-bold my-2 text-gray-700 capitalize hover:bg-slate-200 py-3 px-4 block whitespace-no-wrap cursor-pointer"
+                      onClick={LOGOUT_THE_USER}
+                    >
+                      Logout
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </>
+          )}
+
           <Link href="/cart">
             <button className="inline-flex items-center bg-gray-100 border-0 py-2 px-4 focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer">
               <span className="absolute right-[17px] top-1 w-4 h-4 rounded-full bg-red-600 text-white line leading-[0.99rem] text-[12px] select-none">
@@ -70,6 +128,17 @@ const Header = () => {
           </Link>
         </div>
       </div>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={1000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+      />
     </header>
   );
 };

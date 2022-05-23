@@ -1,8 +1,10 @@
+import { store } from "../Redux/app/store";
+import { Provider } from "react-redux";
+
 import Head from "next/head";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import { store } from "../Redux/app/store";
-import { Provider } from "react-redux";
+import Subapp from "./subapp";
 
 import "../style/global.css";
 
@@ -10,6 +12,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Provider store={store}>
+        <Subapp />
         <Header />
         <Head>
           <title>CodesWears</title>

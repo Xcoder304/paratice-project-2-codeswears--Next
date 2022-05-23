@@ -1,7 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "../features/AllGlobalStates";
+import allGobalState from "../features/AllGlobalStates";
+import User from "../features/UserState";
+
 export const store = configureStore({
   reducer: {
-    globalStates: userReducer,
+    globalStates: allGobalState,
+    userStates: User,
   },
 });

@@ -1,5 +1,6 @@
+import React from "react";
 import { useEffect, useState } from "react";
-import mongoose from "mongoose";
+import mongoose, { ConnectionStates } from "mongoose";
 import Product from "../../modals/Product";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -7,6 +8,7 @@ import {
   setItemForBuy,
   selectItems,
 } from "../../Redux/features/AllGlobalStates";
+import { selectuserVal } from "../../Redux/features/UserState";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/dist/client/router";
@@ -16,6 +18,7 @@ const Slug = ({ product, varients }) => {
   const [isService, setIsService] = useState(null);
   const [cityName, setCityName] = useState(null);
   const products = useSelector(selectItems);
+  const user = useSelector(selectuserVal);
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -65,64 +68,73 @@ const Slug = ({ product, varients }) => {
   };
 
   const BUY_THE_PRODUCT = () => {
-    dispatch(
-      setItemForBuy({
-        id: product._id,
-        name: product.title,
-        color: product.color,
-        size: product.size,
-        price: product.price,
-        slug: product.slug,
-        img: product.img,
-        availableQty: product.availableQty,
-      })
-    );
-
-    router.push("/checkout");
+    if (user) {
+      dispatch(
+        setItemForBuy({
+          id: product._id,
+          name: product.title,
+          color: product.color,
+          size: product.size,
+          price: product.price,
+          slug: product.slug,
+          img: product.img,
+          availableQty: product.availableQty,
+        })
+      );
+      router.push("/checkout");
+    }
+    if (user == null) {
+      router.push("/login");
+    }
   };
 
   // for set the product to cart
 
   const ADD_TO_CART = () => {
-    let id = products.map((d) => d.id);
+    if (user) {
+      let id = products.map((d) => d.id);
 
-    if (id.includes(product._id)) {
-      toast.error("Product already exist in cart", {
-        position: "bottom-left",
-        autoClose: 1000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-      });
+      if (id.includes(product._id)) {
+        toast.error("Product already exist in cart", {
+          position: "bottom-left",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+      if (!id.includes(product._id)) {
+        dispatch(
+          setItems({
+            id: product._id,
+            name: product.title,
+            brandname: product.brandname,
+            decs: product.desc,
+            color: product.color,
+            size: product.size,
+            price: product.price,
+            slug: product.slug,
+            category: product.category,
+            img: product.img,
+            availableQty: product.availableQty,
+          })
+        );
+
+        toast.success("Added to the Cart", {
+          position: "bottom-left",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+        });
+      }
     }
-    if (!id.includes(product._id)) {
-      dispatch(
-        setItems({
-          id: product._id,
-          name: product.title,
-          brandname: product.brandname,
-          decs: product.desc,
-          color: product.color,
-          size: product.size,
-          price: product.price,
-          slug: product.slug,
-          category: product.category,
-          img: product.img,
-          availableQty: product.availableQty,
-        })
-      );
-
-      toast.success("Added to the Cart", {
-        position: "bottom-left",
-        autoClose: 1000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-      });
+    if (user == null) {
+      router.push("/login");
     }
   };
 

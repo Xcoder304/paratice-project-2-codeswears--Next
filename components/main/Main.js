@@ -1,5 +1,3 @@
-import React from "react";
-
 const Main = () => {
   return (
     <section className="text-gray-600 body-font">

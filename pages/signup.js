@@ -1,3 +1,4 @@
+import { useLayoutEffect } from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { ToastContainer, toast } from "react-toastify";
@@ -17,6 +18,13 @@ const Signup = () => {
     email: "",
     password: "",
   });
+  let userValue = localStorage.getItem("token");
+
+  useLayoutEffect(() => {
+    if (userValue) {
+      router.push("/");
+    }
+  }, [userValue]);
 
   const SIGN_THE_USER = async (e) => {
     e.preventDefault();
@@ -86,6 +94,7 @@ const Signup = () => {
                 onChange={(e) =>
                   setuserDetails({ ...userDetails, firstname: e.target.value })
                 }
+                autoComplete="off"
               />
             </div>
             <div className="form-group mb-6">
@@ -114,6 +123,7 @@ const Signup = () => {
                 onChange={(e) =>
                   setuserDetails({ ...userDetails, lastname: e.target.value })
                 }
+                autoComplete="off"
               />
             </div>
           </div>
@@ -141,6 +151,7 @@ const Signup = () => {
               onChange={(e) =>
                 setuserDetails({ ...userDetails, email: e.target.value })
               }
+              autoComplete="off"
             />
           </div>
           <div className="form-group mb-6">
@@ -167,6 +178,7 @@ const Signup = () => {
               onChange={(e) =>
                 setuserDetails({ ...userDetails, password: e.target.value })
               }
+              autoComplete="off"
             />
           </div>
 

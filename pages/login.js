@@ -1,8 +1,11 @@
+import { useLayoutEffect } from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/router";
+
+import { AiFillEye } from "react-icons/ai";
 
 const Login = () => {
   const ResetuserDetails = {
@@ -13,8 +16,16 @@ const Login = () => {
     email: "",
     password: "",
   });
-
+  const [showpassword, setShowPassword] = useState(false);
+  let userValue = localStorage.getItem("token");
   const router = useRouter();
+
+  // it will check if the user token exites it will redirect to prev page
+  useLayoutEffect(() => {
+    if (userValue) {
+      router.push("/");
+    }
+  }, [userValue]);
 
   const LOGIN_THE_USER = async (e) => {
     e.preventDefault();
@@ -33,8 +44,9 @@ const Login = () => {
     });
     let res = await f.json();
 
-    setuserDetails(ResetuserDetails);
     if (res.success) {
+      // saving the token
+      localStorage.setItem("token", res.token);
       toast.success("You Successfull Logged in", {
         position: "bottom-left",
         autoClose: 1000,
@@ -44,6 +56,7 @@ const Login = () => {
         draggable: true,
         progress: undefined,
       });
+      setuserDetails(ResetuserDetails);
       setTimeout(() => {
         router.push("/");
       }, 1200);
@@ -96,6 +109,7 @@ const Login = () => {
               onChange={(e) =>
                 setuserDetails({ ...userDetails, email: e.target.value })
               }
+              autoComplete="off"
             />
           </div>
           <div className="form-group mb-6">
@@ -105,12 +119,14 @@ const Login = () => {
             >
               Password
             </label>
-            <input
-              type="password"
-              className="form-control block
+            <div className="w-full relative">
+              <input
+                type={`${showpassword ? "text" : "password"}`}
+                className="form-control block
         w-full
         px-3
         py-1.5
+        pr-[50px]
         text-base
         font-normal
         text-gray-700
@@ -121,20 +137,28 @@ const Login = () => {
         ease-in-out
         m-0
         focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-              id="exampleInputPassword2"
-              placeholder="Password"
-              value={userDetails.password}
-              name="password"
-              onChange={(e) =>
-                setuserDetails({ ...userDetails, password: e.target.value })
-              }
-            />
+                id="exampleInputPassword2"
+                placeholder="Password"
+                value={userDetails.password}
+                name="password"
+                onChange={(e) =>
+                  setuserDetails({ ...userDetails, password: e.target.value })
+                }
+                autoComplete="off"
+              />
+              <div
+                className="absolute right-2 top-[50%] translate-y-[-47%] cursor-pointer"
+                onClick={() => setShowPassword(!showpassword)}
+              >
+                <AiFillEye className="select-none text-2xl text-gray-700" />
+              </div>
+            </div>
           </div>
           <div className="flex justify-between items-center mb-6">
             <div className="form-group form-check">
               <input
                 type="checkbox"
-                className="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+                className="form-check-input appearance-none h-4 w-4 border  border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
                 id="exampleCheck2"
               />
               <label
