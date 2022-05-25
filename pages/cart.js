@@ -4,80 +4,93 @@ import { MdOutlineAdd } from "react-icons/md";
 import {
   selectItems,
   removeItems,
+  removeAllItems,
   setItemForBuy,
+  selectItemQty,
+  setItemQty,
+  increaseItemQty,
+  decreaseItemQty,
 } from "../Redux/features/AllGlobalStates";
 import { useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
 
 const Checkout = () => {
+  // variables
   const Product = useSelector(selectItems);
-  const [Qty, setQty] = useState(1);
+  const itemQty = useSelector(selectItemQty);
   const [hideQtybtn, sethideQtybtn] = useState({
     addbtn: false,
     removebtn: false,
   });
+  let userValue;
   const router = useRouter();
+  const dispatch = useDispatch();
 
+  // for getting the price
   const totalPrice = Product.reduce(
     (amount, item) => parseInt(item.price) + parseInt(amount),
     +0
   );
-  let userValue = localStorage.getItem("token");
-  const dispatch = useDispatch();
 
+  if (typeof window !== "undefined") {
+    userValue = localStorage.getItem("token");
+  }
+
+  // ****Effects
   useLayoutEffect(() => {
     if (userValue == null) {
       router.push("/login");
     }
   }, [userValue]);
-  console.log("😁", userValue);
 
-  const DelectItem = () => {
-    dispatch(removeItems());
+  useLayoutEffect(() => {
+    const itemAvailableQty = {};
+    Product.forEach((data) => {
+      itemAvailableQty = data.availableQty;
+    });
+    if (itemQty < 1) {
+      dispatch(setItemQty(1));
+    }
+
+    if (itemQty <= itemAvailableQty) {
+      sethideQtybtn({ addbtn: false, removebtn: true });
+    }
+    if (itemQty > 1) {
+      sethideQtybtn({ addbtn: false, removebtn: false });
+    }
+    if (itemQty >= itemAvailableQty) {
+      sethideQtybtn({ addbtn: true, removebtn: false });
+    }
+  }, [itemQty]);
+
+  // ************
+
+  // All funtions
+  const DelectItem = (data) => {
+    dispatch(removeItems(data));
   };
 
-  const BUY_THE_PRODUCT = () => {
-    const item = {};
-    Product.forEach((data) => {
-      item = {
-        ...data,
-      };
+  const BUY_SINGAL_THE_PRODUCT = () => {
+    const item = Product.map((data) => {
+      return { ...data, userSelectedQty: itemQty };
     });
-    dispatch(
-      setItemForBuy({
-        id: item.id,
-        name: item.name,
-        color: item.color,
-        size: item.size,
-        price: item.price,
-        slug: item.slug,
-        img: item.img,
-        availableQty: item.availableQty,
-        userSelectedQty: Qty,
-      })
-    );
+    dispatch(setItemForBuy(Product));
     router.push("/checkout");
   };
 
-  useLayoutEffect(() => {
-    const itemQty = {};
-    Product.forEach((data) => {
-      itemQty = data.availableQty;
-    });
-    if (Qty < 1) {
-      setQty(1);
-    }
+  const CLEAR_THE_CART = () => {
+    dispatch(removeAllItems());
+  };
 
-    if (Qty <= itemQty) {
-      sethideQtybtn({ addbtn: false, removebtn: true });
-    }
-    if (Qty > 1) {
-      sethideQtybtn({ addbtn: false, removebtn: false });
-    }
-    if (Qty >= itemQty) {
-      sethideQtybtn({ addbtn: true, removebtn: false });
-    }
-  }, [Qty]);
+  const BUY_ALL_PRODUCTS = () => {
+    const item = Product.map((data) => {
+      return { ...data, userSelectedQty: itemQty };
+    });
+    dispatch(setItemForBuy(Product));
+    router.push("/checkout");
+  };
+
+  console.log(itemQty);
 
   return (
     <div
@@ -119,7 +132,7 @@ const Checkout = () => {
                     </span>
                     <button
                       className="inline-flex items-center bg-gray-100 border-0 py-2 px-4 w-[60%] focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
-                      onClick={DelectItem}
+                      onClick={() => DelectItem(index)}
                     >
                       <AiFillDelete className="text-2xl m-auto" />
                     </button>
@@ -133,12 +146,12 @@ const Checkout = () => {
                           ? "cursor-not-allowed opacity-50 pointer-events-none"
                           : ""
                       } `}
-                      onClick={() => setQty(Qty - 1)}
+                      onClick={() => dispatch(decreaseItemQty())}
                     >
                       <AiOutlineMinus className="text-2xl m-auto" />
                     </button>
                     <span className="font-bold text-gray-800 select-none">
-                      {Qty}
+                      {itemQty}
                     </span>
                     <button
                       className={`inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer ${
@@ -146,7 +159,7 @@ const Checkout = () => {
                           ? "cursor-not-allowed opacity-50 pointer-events-none"
                           : ""
                       }`}
-                      onClick={() => setQty(Qty + 1)}
+                      onClick={() => dispatch(increaseItemQty())}
                     >
                       <MdOutlineAdd className="text-2xl m-auto" />
                     </button>
@@ -155,7 +168,7 @@ const Checkout = () => {
                   <div className="sec4 w-full md:w-[23.3%]  flex items-center">
                     <button
                       className="w-full font-bold bg-[#1a1818] text-white py-[7px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none"
-                      onClick={BUY_THE_PRODUCT}
+                      onClick={BUY_SINGAL_THE_PRODUCT}
                     >
                       Buy Now
                     </button>
@@ -191,6 +204,20 @@ const Checkout = () => {
             total
           </span>
           <p className="font-bold text-[#c5b522] select-none">${totalPrice}</p>
+        </div>
+        <div className="w-full mt-4 gap-4  flex items-center justify-center">
+          <button
+            className="flex-1 font-bold bg-[#1a1818] text-white py-[8px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none"
+            onClick={CLEAR_THE_CART}
+          >
+            Clear The Cart
+          </button>
+          <button
+            className="flex-1 font-bold bg-[#1a1818] text-white py-[8px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none"
+            onClick={BUY_ALL_PRODUCTS}
+          >
+            Buy All Products
+          </button>
         </div>
       </div>
     </div>

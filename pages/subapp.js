@@ -14,8 +14,6 @@ const Subapp = () => {
       dispatch(setUserVal(token));
     }
   }, [router.query]);
-
-  console.log("this is user value", userValue);
 };
 
 export default Subapp;

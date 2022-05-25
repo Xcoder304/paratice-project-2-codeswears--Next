@@ -31,8 +31,6 @@ const Header = () => {
     // });
   };
 
-  console.log(key);
-
   return (
     <header className="text-gray-600 body-font border-b-2 border-gray-100 sticky top-0 z-20 bg-white">
       <div className="container flex justify-start flex-wrap p-5 flex-col md:flex-row items-center">

@@ -21,23 +21,50 @@ const Checkout = () => {
     addbtn: false,
     removebtn: false,
   });
-  const [userSelectedQty, setuserSelectedQty] = useState(
-    itemforbuy?.userSelectedQty
-  );
-
   const dispatch = useDispatch();
   const router = useRouter();
+
+  useLayoutEffect(() => {
+    if (itemforbuy.length == 0) {
+      router.back();
+    }
+  }, [itemforbuy]);
+
+  console.log("items", itemforbuy);
+
+  // useLayoutEffect(() => {
+  //   if (userSelectedQty) {
+  //     if (userSelectedQty <= itemforbuy?.availableQty) {
+  //       sethideQtybtn({ addbtn: false, removebtn: true });
+  //     }
+  //     if (userSelectedQty > 1) {
+  //       sethideQtybtn({ addbtn: false, removebtn: false });
+  //     }
+  //     if (userSelectedQty >= itemforbuy?.availableQty) {
+  //       sethideQtybtn({ addbtn: true, removebtn: false });
+  //     }
+  //   } else {
+  //     if (QtyOfitem <= itemforbuy?.availableQty) {
+  //       sethideQtybtn({ addbtn: false, removebtn: true });
+  //     }
+  //     if (QtyOfitem > 1) {
+  //       sethideQtybtn({ addbtn: false, removebtn: false });
+  //     }
+  //     if (QtyOfitem >= itemforbuy?.availableQty) {
+  //       sethideQtybtn({ addbtn: true, removebtn: false });
+  //     }
+  //   }
+  // }, [userSelectedQty, QtyOfitem]);
+
+  // funtions
 
   const RedirectBack = () => {
     router.back();
   };
 
-  const DELECT_ITEM = () => {
-    RedirectBack();
-
+  const DELECT_ITEM = (data) => {
+    dispatch(removeItemForBuy(data));
     setTimeout(() => {
-      dispatch(removeItemForBuy());
-
       toast.success("Item Removed", {
         position: "bottom-left",
         autoClose: 1000,
@@ -50,143 +77,118 @@ const Checkout = () => {
     }, 1000);
   };
 
-  useLayoutEffect(() => {
-    if (itemforbuy == null) {
-      RedirectBack();
-    }
-  }, [userSelectedQty]);
-
-  useLayoutEffect(() => {
-    if (userSelectedQty) {
-      if (userSelectedQty <= itemforbuy?.availableQty) {
-        sethideQtybtn({ addbtn: false, removebtn: true });
-      }
-      if (userSelectedQty > 1) {
-        sethideQtybtn({ addbtn: false, removebtn: false });
-      }
-      if (userSelectedQty >= itemforbuy?.availableQty) {
-        sethideQtybtn({ addbtn: true, removebtn: false });
-      }
-    } else {
-      if (QtyOfitem <= itemforbuy?.availableQty) {
-        sethideQtybtn({ addbtn: false, removebtn: true });
-      }
-      if (QtyOfitem > 1) {
-        sethideQtybtn({ addbtn: false, removebtn: false });
-      }
-      if (QtyOfitem >= itemforbuy?.availableQty) {
-        sethideQtybtn({ addbtn: true, removebtn: false });
-      }
-    }
-  }, [userSelectedQty, QtyOfitem]);
-
-  console.log(userSelectedQty);
-
   return itemforbuy == null ? (
     <h4 className="font-bold text-gray-800 text-2xl mx-10 my-2 capitalize select-none py-28">
       no item founded
     </h4>
   ) : (
     <div className="w-full px-2 py-6">
-      <div className="product">
-        <div className="item w-[80%] mx-auto md:mx-0 flex p-2 items-center justify-center md:justify-between  flex-wrap bg-slate-50 rounded-md border-2 border-[#59c9259a]">
-          <div
-            className="sec1 flex items-start cursor-pointer mb-3"
-            onClick={() => router.push(`/product/${itemforbuy?.slug}`)}
-          >
-            <img
-              className="object-contain object-contain select-none rounded-md w-[70px] h-auto"
-              src={itemforbuy?.img}
-              alt="no image"
-            />
-            <div className="flex flex-col items-start justify-start">
-              <div className="flex items-center">
-                <h3 className="font-semibold ml-2 mt-2">
-                  {itemforbuy?.name} -
-                </h3>
-                <span className="font-semibold ml-1 mt-2 uppercase">
-                  {itemforbuy?.size}
-                </span>
-              </div>
-              <div className="mt-2">
-                {itemforbuy.color == "black" && (
-                  <button className="border-2 ml-1 bg-black rounded-full w-6 h-6 focus:outline-non"></button>
-                )}
-                {itemforbuy.color == "red" && (
-                  <button className="border-2 ml-1 bg-red-600 rounded-full w-6 h-6 focus:outline-non"></button>
-                )}
-                {itemforbuy.color == "green" && (
-                  <button className="border-2 ml-1 bg-green-600 rounded-full w-6 h-6 focus:outline-non"></button>
-                )}
-                {itemforbuy.color == "yellow" && (
-                  <button className="border-2 ml-1 bg-yellow-600 rounded-full w-6 h-6 focus:outline-non"></button>
-                )}
-                {itemforbuy.color == "white" && (
-                  <button className="border-2 ml-1 bg-gray-200 rounded-full w-6 h-6 focus:outline-non"></button>
-                )}
-                {itemforbuy.color == "blue" && (
-                  <button className="border-2 ml-1 bg-blue-600 rounded-full w-6 h-6 focus:outline-non"></button>
-                )}
+      {itemforbuy.map(
+        (
+          { id, slug, img, name, size, color, price, userSelectedQty },
+          index
+        ) => {
+          return (
+            <div className="product mb-5" key={slug}>
+              <div className="item w-[80%] mx-auto md:mx-0 flex p-2 items-center justify-center md:justify-between  flex-wrap bg-slate-50 rounded-md border-2 border-[#59c9259a]">
+                <div
+                  className="sec1 flex items-start cursor-pointer mb-3"
+                  onClick={() => router.push(`/product/${slug}`)}
+                >
+                  <img
+                    className="object-contain object-contain select-none rounded-md w-[70px] h-auto"
+                    src={img}
+                    alt="no image"
+                  />
+                  <div className="flex flex-col items-start justify-start">
+                    <div className="flex items-center">
+                      <h3 className="font-semibold ml-2 mt-2">{name} -</h3>
+                      <span className="font-semibold ml-1 mt-2 uppercase">
+                        {size}
+                      </span>
+                    </div>
+                    <div className="mt-2">
+                      {color == "black" && (
+                        <button className="border-2 ml-1 bg-black rounded-full w-6 h-6 focus:outline-non"></button>
+                      )}
+                      {color == "red" && (
+                        <button className="border-2 ml-1 bg-red-600 rounded-full w-6 h-6 focus:outline-non"></button>
+                      )}
+                      {color == "green" && (
+                        <button className="border-2 ml-1 bg-green-600 rounded-full w-6 h-6 focus:outline-non"></button>
+                      )}
+                      {color == "yellow" && (
+                        <button className="border-2 ml-1 bg-yellow-600 rounded-full w-6 h-6 focus:outline-non"></button>
+                      )}
+                      {color == "white" && (
+                        <button className="border-2 ml-1 bg-gray-200 rounded-full w-6 h-6 focus:outline-non"></button>
+                      )}
+                      {color == "blue" && (
+                        <button className="border-2 ml-1 bg-blue-600 rounded-full w-6 h-6 focus:outline-non"></button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="sec2 flex flex-col text-center mb-3">
+                  <span className="capitalize text-gray-700 font-medium text-lg">
+                    price
+                  </span>
+                  <span className="font-bold text-[#c5b522] select-none">
+                    ${price}
+                  </span>
+                </div>
+
+                <div className="sec3 flex flex-col text-center mb-3 select-none">
+                  <span className="capitalize text-gray-700 font-medium text-lg">
+                    product quantity
+                  </span>
+                  <div className="flex w-full flex-row items-center">
+                    <button
+                      className={`inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-1 px-2  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer ${
+                        hideQtybtn.removebtn
+                          ? "cursor-not-allowed opacity-50 pointer-events-none"
+                          : ""
+                      }`}
+                      onClick={() => {
+                        userSelectedQty
+                          ? setuserSelectedQty(userSelectedQty - 1)
+                          : dispatch(RemoveItemForBuyQty());
+                      }}
+                    >
+                      <AiOutlineMinus className="text-2xl m-auto" />
+                    </button>
+                    <span className="font-bold text-lg text-blue-700 select-none">
+                      {userSelectedQty}
+                    </span>
+                    <button
+                      className={`inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-1 px-2  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer ${
+                        hideQtybtn.addbtn
+                          ? "cursor-not-allowed opacity-50 pointer-events-none"
+                          : ""
+                      }`}
+                      onClick={() => {
+                        userSelectedQty
+                          ? setuserSelectedQty(userSelectedQty + 1)
+                          : dispatch(AddItemForBuyQty());
+                      }}
+                    >
+                      <MdOutlineAdd className="text-2xl m-auto" />
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  className="w-[50%] md:w-[100px] inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-3 focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
+                  onClick={() => DELECT_ITEM(index)}
+                >
+                  <AiFillDelete className="text-2xl m-auto" />
+                </button>
               </div>
             </div>
-          </div>
-
-          <div className="sec2 flex flex-col text-center mb-3">
-            <span className="capitalize text-gray-700 font-medium text-lg">
-              price
-            </span>
-            <span className="font-bold text-[#c5b522] select-none">
-              ${itemforbuy?.price}
-            </span>
-          </div>
-
-          <div className="sec3 flex flex-col text-center mb-3 select-none">
-            <span className="capitalize text-gray-700 font-medium text-lg">
-              product quantity
-            </span>
-            <div className="flex w-full flex-row items-center">
-              <button
-                className={`inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-1 px-2  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer ${
-                  hideQtybtn.removebtn
-                    ? "cursor-not-allowed opacity-50 pointer-events-none"
-                    : ""
-                }`}
-                onClick={() => {
-                  userSelectedQty
-                    ? setuserSelectedQty(userSelectedQty - 1)
-                    : dispatch(RemoveItemForBuyQty());
-                }}
-              >
-                <AiOutlineMinus className="text-2xl m-auto" />
-              </button>
-              <span className="font-bold text-lg text-blue-700 select-none">
-                {userSelectedQty ? userSelectedQty : QtyOfitem}
-              </span>
-              <button
-                className={`inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-1 px-2  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer ${
-                  hideQtybtn.addbtn
-                    ? "cursor-not-allowed opacity-50 pointer-events-none"
-                    : ""
-                }`}
-                onClick={() => {
-                  userSelectedQty
-                    ? setuserSelectedQty(userSelectedQty + 1)
-                    : dispatch(AddItemForBuyQty());
-                }}
-              >
-                <MdOutlineAdd className="text-2xl m-auto" />
-              </button>
-            </div>
-          </div>
-
-          <button
-            className="w-[50%] md:w-[100px] inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-3 focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
-            onClick={DELECT_ITEM}
-          >
-            <AiFillDelete className="text-2xl m-auto" />
-          </button>
-        </div>
-      </div>
+          );
+        }
+      )}
 
       {/* form */}
       <div className="form w-[70%] mt-14 px-4 mx-auto md:mx-0">

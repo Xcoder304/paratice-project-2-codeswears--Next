@@ -39,7 +39,7 @@ const Slug = ({ product, varients }) => {
     // changing the state if the user entered pin matches the city pin code.
     if (res.includes(parseInt(userPin))) {
       setIsService(true);
-    } else {
+    } else {+
       setIsService(false);
     }
 

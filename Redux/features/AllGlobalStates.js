@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   items: [],
   itemQty: 0,
-  itemForBuy: null,
+  itemForBuy: [],
   itemForBuyQty: 1,
 };
 
@@ -11,22 +11,42 @@ export const GlobalSlice = createSlice({
   name: "globalStates",
   initialState,
   reducers: {
+    // ****state for items******
     setItems: (state, action) => {
       state.items.push(action.payload);
-      state.itemQty = state.itemQty + 1;
     },
     removeItems: (state, action) => {
-      let index = state.items.indexOf(action.payload);
-      state.items.splice(index, 1);
-      // state.quantity -= action.payload
+      state.items.splice(action.payload, 1);
     },
+    removeAllItems: (state, action) => {
+      state.items = [];
+    },
+    // ************
+
+    // ****state for itemsQty ******
+    setItemQty: (state, action) => {
+      state.itemQty = action.payload;
+    },
+
+    increaseItemQty: (state, action) => {
+      state.itemQty = state.itemQty + 1;
+    },
+    decreaseItemQty: (state, action) => {
+      state.itemQty = state.itemQty - 1;
+    },
+    // ************
+
+    // ****state for Item for buy ******
     setItemForBuy: (state, action) => {
       state.itemForBuy = action.payload;
       state.itemForBuyQty = state.itemForBuyQty = 1;
     },
     removeItemForBuy: (state, action) => {
-      state.itemForBuy = null;
+      state.itemForBuy.splice(action.payload, 1);
     },
+    // ************
+
+    // ****state for Item for buy Qty ******
     AddItemForBuyQty: (state, action) => {
       state.itemForBuyQty = state.itemForBuyQty + 1;
     },
@@ -37,12 +57,18 @@ export const GlobalSlice = createSlice({
         state.itemForBuyQty = 1;
       }
     },
+
+    // ************
   },
 });
 
 export const {
   setItems,
   removeItems,
+  removeAllItems,
+  setItemQty,
+  increaseItemQty,
+  decreaseItemQty,
   setItemForBuy,
   removeItemForBuy,
   AddItemForBuyQty,
