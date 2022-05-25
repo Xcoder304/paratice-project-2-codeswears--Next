@@ -1,34 +1,22 @@
 import { useLayoutEffect, useState } from "react";
 import { AiFillDelete, AiOutlineMinus } from "react-icons/ai";
 import { MdOutlineAdd } from "react-icons/md";
-import {
-  selectItems,
-  removeItems,
-  removeAllItems,
-  setItemForBuy,
-  selectItemQty,
-  setItemQty,
-  increaseItemQty,
-  decreaseItemQty,
-} from "../Redux/features/AllGlobalStates";
+import { setItemForBuy } from "../Redux/features/AllGlobalStates";
 import { useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
+import mongoose from "mongoose";
+// import Cart from "../modals/Cart";
 
-const Checkout = () => {
+const Checkout = ({ data }) => {
   // variables
-  const Product = useSelector(selectItems);
-  const itemQty = useSelector(selectItemQty);
-  const [hideQtybtn, sethideQtybtn] = useState({
-    addbtn: false,
-    removebtn: false,
-  });
+  const [Product, setProduct] = useState(data);
   let userValue;
   const router = useRouter();
   const dispatch = useDispatch();
 
   // for getting the price
   const totalPrice = Product.reduce(
-    (amount, item) => parseInt(item.price) + parseInt(amount),
+    (amount, item) => parseInt(item.price) * parseInt(amount),
     +0
   );
 
@@ -43,54 +31,59 @@ const Checkout = () => {
     }
   }, [userValue]);
 
-  useLayoutEffect(() => {
-    const itemAvailableQty = {};
-    Product.forEach((data) => {
-      itemAvailableQty = data.availableQty;
-    });
-    if (itemQty < 1) {
-      dispatch(setItemQty(1));
-    }
-
-    if (itemQty <= itemAvailableQty) {
-      sethideQtybtn({ addbtn: false, removebtn: true });
-    }
-    if (itemQty > 1) {
-      sethideQtybtn({ addbtn: false, removebtn: false });
-    }
-    if (itemQty >= itemAvailableQty) {
-      sethideQtybtn({ addbtn: true, removebtn: false });
-    }
-  }, [itemQty]);
-
   // ************
 
   // All funtions
-  const DelectItem = (data) => {
-    dispatch(removeItems(data));
+  const DelectItem = async (e, productId, productIndex) => {
+    e.preventDefault();
+
+    Product.splice(productIndex, 1);
+    const data = {
+      id: productId,
+    };
+
+    let f = await fetch(`${process.env.HOSTING_NAME}/api/removecartproduct`, {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    let res = await f.json();
+    router.push(`${process.env.HOSTING_NAME}/cart`);
+  };
+
+  const CLEAR_THE_CART = async (e) => {
+    e.preventDefault();
+
+    setProduct([]);
+    let f = await fetch(
+      `${process.env.HOSTING_NAME}/api/removeallcartproduct`,
+      {
+        method: "POST", // or 'PUT'
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    router.push(`${process.env.HOSTING_NAME}/cart`);
   };
 
   const BUY_SINGAL_THE_PRODUCT = () => {
     const item = Product.map((data) => {
       return { ...data, userSelectedQty: itemQty };
     });
-    dispatch(setItemForBuy(Product));
+    dispatch(setItemForBuy(item));
     router.push("/checkout");
-  };
-
-  const CLEAR_THE_CART = () => {
-    dispatch(removeAllItems());
   };
 
   const BUY_ALL_PRODUCTS = () => {
     const item = Product.map((data) => {
       return { ...data, userSelectedQty: itemQty };
     });
-    dispatch(setItemForBuy(Product));
+    dispatch(setItemForBuy(item));
     router.push("/checkout");
   };
-
-  console.log(itemQty);
 
   return (
     <div
@@ -106,76 +99,69 @@ const Checkout = () => {
               your basket is empty
             </h4>
           ) : (
-            Product.map(({ name, price, img, size, color, slug }, index) => {
-              return (
-                <div
-                  className="items flex mb-4 flex-col md:flex-row justify-center items-start md:items-center py-2 px-3 bg-slate-50 rounded-md border-2 border-[#8181811a]"
-                  key={index}
-                >
-                  {/*  */}
+            Product.map(
+              ({ _id, title, price, img, size, color, slug }, index) => {
+                return (
                   <div
-                    className="sec1 w-full md:w-[44%] flex items-start cursor-pointer"
-                    onClick={() => router.push(`/product/${slug}`)}
+                    className="items flex mb-4 flex-col md:flex-row justify-center items-start md:items-center py-2 px-3 bg-slate-50 rounded-md border-2 border-[#8181811a]"
+                    key={_id}
                   >
-                    <img
-                      className="object-cover object-center block select-none rounded-md w-[70px] h-auto"
-                      src={img}
-                      alt="no image"
-                    />
-                    <h3 className="font-semibold ml-2 mt-2">{`${name} (${color}/${size})`}</h3>
-                  </div>
+                    {/*  */}
+                    <div
+                      className="sec1 w-full md:w-[44%] flex items-start cursor-pointer"
+                      onClick={() => router.push(`/product/${slug}`)}
+                    >
+                      <img
+                        className="object-cover object-center block select-none rounded-md w-[70px] h-auto"
+                        src={img}
+                        alt="no image"
+                      />
+                      <h3 className="font-semibold ml-2 mt-2">{`${title} (${color}/${size})`}</h3>
+                    </div>
 
-                  {/*  */}
-                  <div className="sec2 w-full md:w-[12%] text-center my-2">
-                    <span className="font-bold text-[#c5b522] select-none">
-                      ${price}
-                    </span>
-                    <button
-                      className="inline-flex items-center bg-gray-100 border-0 py-2 px-4 w-[60%] focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
-                      onClick={() => DelectItem(index)}
-                    >
-                      <AiFillDelete className="text-2xl m-auto" />
-                    </button>
-                  </div>
+                    {/*  */}
+                    <div className="sec2 w-full md:w-[12%] text-center my-2">
+                      <span className="font-bold text-[#c5b522] select-none">
+                        ${price}
+                      </span>
+                      <form
+                        onSubmit={(e) => DelectItem(e, _id, index)}
+                        method="GET"
+                      >
+                        <button
+                          type="submit"
+                          className="inline-flex items-center bg-gray-100 border-0 py-2 px-4 w-[60%] focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
+                        >
+                          <AiFillDelete className="text-2xl m-auto" />
+                        </button>
+                      </form>
+                    </div>
 
-                  {/*  */}
-                  <div className="sec3 w-full md:w-[23.3%]  flex items-center">
-                    <button
-                      className={`inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer ${
-                        hideQtybtn.removebtn
-                          ? "cursor-not-allowed opacity-50 pointer-events-none"
-                          : ""
-                      } `}
-                      onClick={() => dispatch(decreaseItemQty())}
-                    >
-                      <AiOutlineMinus className="text-2xl m-auto" />
-                    </button>
-                    <span className="font-bold text-gray-800 select-none">
-                      {itemQty}
-                    </span>
-                    <button
-                      className={`inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer ${
-                        hideQtybtn.addbtn
-                          ? "cursor-not-allowed opacity-50 pointer-events-none"
-                          : ""
-                      }`}
-                      onClick={() => dispatch(increaseItemQty())}
-                    >
-                      <MdOutlineAdd className="text-2xl m-auto" />
-                    </button>
-                  </div>
+                    {/*  */}
+                    <div className="sec3 w-full md:w-[23.3%]  flex items-center">
+                      <button className="inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer">
+                        <AiOutlineMinus className="text-2xl m-auto" />
+                      </button>
+                      <span className="font-bold text-gray-800 select-none">
+                        1
+                      </span>
+                      <button className="inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer">
+                        <MdOutlineAdd className="text-2xl m-auto" />
+                      </button>
+                    </div>
 
-                  <div className="sec4 w-full md:w-[23.3%]  flex items-center">
-                    <button
-                      className="w-full font-bold bg-[#1a1818] text-white py-[7px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none"
-                      onClick={BUY_SINGAL_THE_PRODUCT}
-                    >
-                      Buy Now
-                    </button>
+                    <div className="sec4 w-full md:w-[23.3%]  flex items-center">
+                      <button
+                        className="w-full font-bold bg-[#1a1818] text-white py-[7px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none"
+                        onClick={BUY_SINGAL_THE_PRODUCT}
+                      >
+                        Buy Now
+                      </button>
+                    </div>
                   </div>
-                </div>
-              );
-            })
+                );
+              }
+            )
           )}
         </div>
       </div>
@@ -203,15 +189,14 @@ const Checkout = () => {
           <span className="font-medium text-base select-none text-gray-600 capitalize ">
             total
           </span>
-          <p className="font-bold text-[#c5b522] select-none">${totalPrice}</p>
+          <p className="font-bold text-[#c5b522] select-none">$66</p>
         </div>
         <div className="w-full mt-4 gap-4  flex items-center justify-center">
-          <button
-            className="flex-1 font-bold bg-[#1a1818] text-white py-[8px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none"
-            onClick={CLEAR_THE_CART}
-          >
-            Clear The Cart
-          </button>
+          <form onSubmit={CLEAR_THE_CART} method="POST" className="flex-1">
+            <button className="w-full font-bold bg-[#1a1818] text-white py-[8px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none">
+              Clear The Cart
+            </button>
+          </form>
           <button
             className="flex-1 font-bold bg-[#1a1818] text-white py-[8px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none"
             onClick={BUY_ALL_PRODUCTS}
@@ -223,5 +208,19 @@ const Checkout = () => {
     </div>
   );
 };
+
+export async function getServerSideProps(context) {
+  if (!mongoose.connections[0].readyState) {
+    await mongoose.connect(process.env.MONGO_URI);
+  }
+
+  let fetchproducts = await fetch("http://localhost:3000/api/getcartproducts");
+  let res = await fetchproducts.json();
+  // let products = await Cart.find();
+
+  return {
+    props: { data: res },
+  };
+}
 
 export default Checkout;

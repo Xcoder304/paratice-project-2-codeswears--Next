@@ -20,7 +20,6 @@ const Slug = ({ product, varients }) => {
   const [isService, setIsService] = useState(null);
   const [cityName, setCityName] = useState(null);
   const products = useSelector(selectItems);
-  const [savedProducts, setSavedProducts] = useState(null);
   const user = useSelector(selectuserVal);
   const router = useRouter();
   const dispatch = useDispatch();
@@ -65,19 +64,6 @@ const Slug = ({ product, varients }) => {
     }
   }, [userPin]);
 
-  // fetching the data saved cart data
-  useLayoutEffect(() => {
-    const fetchData = async () => {
-      let f = await fetch(`${process.env.HOSTING_NAME}/api/getcartproducts`);
-      let data = await f.json();
-
-      let result = data.map((data) => data.slug);
-
-      setSavedProducts(result);
-    };
-    fetchData();
-  }, [router.query]);
-
   const GetNewVarient = async (newcolor, newsize) => {
     let url = `http://localhost:3000/product/${varients[newcolor][newsize]["slug"]}`;
     window.location = url;
@@ -106,10 +92,11 @@ const Slug = ({ product, varients }) => {
 
   // for set the product to cart
 
-  const ADD_TO_CART = async (e) => {
-    e.preventDefault();
+  const ADD_TO_CART = () => {
     if (user) {
-      if (savedProducts.includes(product.slug)) {
+      let id = products.map((d) => d.id);
+
+      if (id.includes(product._id)) {
         toast.error("Product already exist in cart", {
           position: "bottom-left",
           autoClose: 1000,
@@ -120,31 +107,23 @@ const Slug = ({ product, varients }) => {
           progress: undefined,
         });
       }
-      if (!savedProducts.includes(product.slug)) {
-        const data = {
-          title: product.title,
-          slug: product.slug,
-          desc: product.desc,
-          img: product.img,
-          size: product.size,
-          color: product.color,
-          price: product.price,
-          availableQty: product.availableQty,
-        };
+      if (!id.includes(product._id)) {
+        dispatch(
+          setItems({
+            id: product._id,
+            name: product.title,
+            brandname: product.brandname,
+            decs: product.desc,
+            color: product.color,
+            size: product.size,
+            price: product.price,
+            slug: product.slug,
+            category: product.category,
+            img: product.img,
+            availableQty: product.availableQty,
+          })
+        );
 
-        let f = await fetch(`${process.env.HOSTING_NAME}/api/savetocart`, {
-          method: "POST", // or 'PUT'
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
-        try {
-          let res = await f.json();
-        } catch (err) {
-          console.error("error", err);
-        }
-        router.push(`${process.env.HOSTING_NAME}/product/${router.query.slug}`);
         toast.success("Added to the Cart", {
           position: "bottom-left",
           autoClose: 1000,

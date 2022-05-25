@@ -5,6 +5,7 @@ const initialState = {
   itemQty: 0,
   itemForBuy: [],
   itemForBuyQty: 1,
+  AllItemsId: [],
 };
 
 export const GlobalSlice = createSlice({
@@ -20,19 +21,6 @@ export const GlobalSlice = createSlice({
     },
     removeAllItems: (state, action) => {
       state.items = [];
-    },
-    // ************
-
-    // ****state for itemsQty ******
-    setItemQty: (state, action) => {
-      state.itemQty = action.payload;
-    },
-
-    increaseItemQty: (state, action) => {
-      state.itemQty = state.itemQty + 1;
-    },
-    decreaseItemQty: (state, action) => {
-      state.itemQty = state.itemQty - 1;
     },
     // ************
 
@@ -57,8 +45,10 @@ export const GlobalSlice = createSlice({
         state.itemForBuyQty = 1;
       }
     },
-
     // ************
+    setAllItemsId: (state, action) => {
+      state.AllItemsId.push(action.payload);
+    },
   },
 });
 
@@ -73,6 +63,7 @@ export const {
   removeItemForBuy,
   AddItemForBuyQty,
   RemoveItemForBuyQty,
+  setAllItemsId,
 } = GlobalSlice.actions;
 
 export const selectItems = (state) => state.globalStates.items;
@@ -80,5 +71,5 @@ export const selectItemQty = (state) => state.globalStates.itemQty;
 export const selectItemForBuy = (state) => state.globalStates.itemForBuy;
 export const selectItemForBuyQty = (state) => state.globalStates.itemForBuyQty;
 export const selectItemForBuyMsg = (state) => state.globalStates.itemForBuyMsg;
-
+export const selectAllItemsId = (state) => state.globalStates.AllItemsId;
 export default GlobalSlice.reducer;

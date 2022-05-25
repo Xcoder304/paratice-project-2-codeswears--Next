@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useLayoutEffect } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import Link from "next/link";
 import Image from "next/image";
-import { selectItems } from "../Redux/features/AllGlobalStates";
 import { selectuserVal, setUserVal } from "../Redux/features/UserState";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/dist/client/router";
@@ -12,24 +11,23 @@ import "react-toastify/dist/ReactToastify.css";
 
 const Header = () => {
   const user = useSelector(selectuserVal);
-  const [key, setkey] = useState(0);
-  const items = useSelector(selectItems);
+  const [totalCartItems, settotalCartItems] = useState(0);
   const dispatch = useDispatch();
   const router = useRouter();
 
   const LOGOUT_THE_USER = () => {
     dispatch(setUserVal(null));
     localStorage.removeItem("token");
-    // toast.success("Logout Sucessfully", {
-    //   position: "bottom-left",
-    //   autoClose: 1000,
-    //   hideProgressBar: true,
-    //   closeOnClick: true,
-    //   pauseOnHover: false,
-    //   draggable: true,
-    //   progress: undefined,
-    // });
   };
+
+  useLayoutEffect(() => {
+    const fetchData = async () => {
+      let f = await fetch(`${process.env.HOSTING_NAME}/api/getcartproducts`);
+      let data = await f.json();
+      settotalCartItems(data.length);
+    };
+    fetchData();
+  }, [router.query]);
 
   return (
     <header className="text-gray-600 body-font border-b-2 border-gray-100 sticky top-0 z-20 bg-white">
@@ -119,7 +117,7 @@ const Header = () => {
           <Link href="/cart">
             <button className="inline-flex items-center bg-gray-100 border-0 py-2 px-4 focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer">
               <span className="absolute right-[17px] top-1 w-4 h-4 rounded-full bg-red-600 text-white line leading-[0.99rem] text-[12px] select-none">
-                {items.length}
+                {totalCartItems}
               </span>
               <AiOutlineShoppingCart className="text-2xl" />
             </button>

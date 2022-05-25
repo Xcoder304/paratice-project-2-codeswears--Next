@@ -30,8 +30,6 @@ const Checkout = () => {
     }
   }, [itemforbuy]);
 
-  console.log("items", itemforbuy);
-
   // useLayoutEffect(() => {
   //   if (userSelectedQty) {
   //     if (userSelectedQty <= itemforbuy?.availableQty) {
