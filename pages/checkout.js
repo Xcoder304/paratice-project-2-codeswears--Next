@@ -24,9 +24,13 @@ const Checkout = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
+  const RedirectBack = () => {
+    router.back();
+  };
+
   useLayoutEffect(() => {
     if (itemforbuy.length == 0) {
-      router.back();
+      RedirectBack();
     }
   }, [itemforbuy]);
 
@@ -56,12 +60,10 @@ const Checkout = () => {
 
   // funtions
 
-  const RedirectBack = () => {
-    router.back();
-  };
+  const DELECT_PRODUCT = (e, productIndex) => {
+    e.preventDefault();
+    dispatch(removeItemForBuy(productIndex));
 
-  const DELECT_ITEM = (data) => {
-    dispatch(removeItemForBuy(data));
     setTimeout(() => {
       toast.success("Item Removed", {
         position: "bottom-left",
@@ -83,11 +85,22 @@ const Checkout = () => {
     <div className="w-full px-2 py-6">
       {itemforbuy.map(
         (
-          { id, slug, img, name, size, color, price, userSelectedQty },
+          {
+            _id,
+            id,
+            title,
+            slug,
+            img,
+            name,
+            size,
+            color,
+            price,
+            userSelectedQty,
+          },
           index
         ) => {
           return (
-            <div className="product mb-5" key={slug}>
+            <div className="product mb-5" key={index}>
               <div className="item w-[80%] mx-auto md:mx-0 flex p-2 items-center justify-center md:justify-between  flex-wrap bg-slate-50 rounded-md border-2 border-[#59c9259a]">
                 <div
                   className="sec1 flex items-start cursor-pointer mb-3"
@@ -100,7 +113,9 @@ const Checkout = () => {
                   />
                   <div className="flex flex-col items-start justify-start">
                     <div className="flex items-center">
-                      <h3 className="font-semibold ml-2 mt-2">{name} -</h3>
+                      <h3 className="font-semibold ml-2 mt-2">
+                        {name || title} -
+                      </h3>
                       <span className="font-semibold ml-1 mt-2 uppercase">
                         {size}
                       </span>
@@ -176,12 +191,15 @@ const Checkout = () => {
                   </div>
                 </div>
 
-                <button
-                  className="w-[50%] md:w-[100px] inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-3 focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
-                  onClick={() => DELECT_ITEM(index)}
-                >
-                  <AiFillDelete className="text-2xl m-auto" />
-                </button>
+                <form method="POST">
+                  <button
+                    type="submit"
+                    className="w-[50%] md:w-[100px] inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-3 focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
+                    onClick={(e) => DELECT_PRODUCT(e, index)}
+                  >
+                    <AiFillDelete className="text-2xl m-auto" />
+                  </button>
+                </form>
               </div>
             </div>
           );
@@ -189,12 +207,15 @@ const Checkout = () => {
       )}
 
       {/* form */}
-      <div className="form w-[70%] mt-14 px-4 mx-auto md:mx-0">
+      <h4 className="mt-14 ml-3 select-none text-gray-700 font-bold text-4xl">
+        Fill The Details for Order
+      </h4>
+      <div className="form w-[70%] mt-3 px-4 mx-auto md:mx-0">
         <form className="bg-slate-50 rounded-md border-2 py-4 px-5 border-[#8181811a] ">
           <div className="flex flex-col md:flex-row items-center w-[90%] gap-x-3 md:gap-x-3">
             <input
               type="text"
-              placeholder="user Name"
+              placeholder="Name"
               required
               className="mb-3 block px-2.5 py-4 w-full text-sm text-gray-900 bg-gray-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
@@ -220,6 +241,21 @@ const Checkout = () => {
               className="mb-3 block px-2.5 py-4 w-full text-sm placeholder:text-[13px] text-gray-900 bg-gr.ay-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
           </div>
+
+          <div className="flex flex-col md:flex-row items-center w-[90%] gap-x-3 md:gap-x-3">
+            <input
+              type="text"
+              placeholder="State"
+              required
+              className="mb-3 block px-2.5 py-4 w-full text-sm text-gray-900 bg-gray-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            />
+            <input
+              type="text"
+              placeholder="City"
+              required
+              className="mb-3 block px-2.5 py-4 w-full text-sm placeholder:text-[13px] text-gray-900 bg-gr.ay-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            />
+          </div>
           {/* 
           <label
             htmlFor="message"
@@ -238,7 +274,7 @@ const Checkout = () => {
             type="submit"
             className="w-[150px] font-bold bg-[#1a1818] text-white mt-4 py-[10px] rounded-md ease-in transition-opacity hover:opacity-80 select-none"
           >
-            Buy Now
+            Proceed to Pay
           </button>
         </form>
       </div>

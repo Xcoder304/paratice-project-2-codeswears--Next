@@ -69,19 +69,14 @@ const Checkout = ({ data }) => {
     router.push(`${process.env.HOSTING_NAME}/cart`);
   };
 
-  const BUY_SINGAL_THE_PRODUCT = () => {
-    const item = Product.map((data) => {
-      return { ...data, userSelectedQty: itemQty };
-    });
+  const BUY_SINGAL_THE_PRODUCT = (id) => {
+    const item = Product.filter((data) => data._id == id);
     dispatch(setItemForBuy(item));
     router.push("/checkout");
   };
 
   const BUY_ALL_PRODUCTS = () => {
-    const item = Product.map((data) => {
-      return { ...data, userSelectedQty: itemQty };
-    });
-    dispatch(setItemForBuy(item));
+    dispatch(setItemForBuy(Product));
     router.push("/checkout");
   };
 
@@ -126,7 +121,7 @@ const Checkout = ({ data }) => {
                       </span>
                       <form
                         onSubmit={(e) => DelectItem(e, _id, index)}
-                        method="GET"
+                        method="POST"
                       >
                         <button
                           type="submit"
@@ -153,7 +148,7 @@ const Checkout = ({ data }) => {
                     <div className="sec4 w-full md:w-[23.3%]  flex items-center">
                       <button
                         className="w-full font-bold bg-[#1a1818] text-white py-[7px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none"
-                        onClick={BUY_SINGAL_THE_PRODUCT}
+                        onClick={() => BUY_SINGAL_THE_PRODUCT(_id || id)}
                       >
                         Buy Now
                       </button>

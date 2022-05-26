@@ -4,22 +4,19 @@ import mongoose, { ConnectionStates } from "mongoose";
 import Product from "../../modals/Product";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  setItems,
-  setItemForBuy,
-  selectItems,
-  selectAllItemsId,
-  setAllItemsId,
+  setSingalItemForBuy,
+  clearItemForBuy,
 } from "../../Redux/features/AllGlobalStates";
 import { selectuserVal } from "../../Redux/features/UserState";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/dist/client/router";
+import { BiArrowBack } from "react-icons/bi";
 
 const Slug = ({ product, varients }) => {
   const [userPin, setUserPin] = useState("");
   const [isService, setIsService] = useState(null);
   const [cityName, setCityName] = useState(null);
-  const products = useSelector(selectItems);
   const [savedProducts, setSavedProducts] = useState(null);
   const user = useSelector(selectuserVal);
   const router = useRouter();
@@ -85,18 +82,8 @@ const Slug = ({ product, varients }) => {
 
   const BUY_THE_PRODUCT = () => {
     if (user) {
-      dispatch(
-        setItemForBuy({
-          id: product._id,
-          name: product.title,
-          color: product.color,
-          size: product.size,
-          price: product.price,
-          slug: product.slug,
-          img: product.img,
-          availableQty: product.availableQty,
-        })
-      );
+      dispatch(clearItemForBuy());
+      dispatch(setSingalItemForBuy(product));
       router.push("/checkout");
     }
     if (user == null) {
@@ -162,7 +149,15 @@ const Slug = ({ product, varients }) => {
   };
   return (
     <section className="text-gray-600 body-font overflow-hidden">
-      <div className="container px-5 py-24 mx-auto">
+      <div className="container px-5 py-24 mx-auto relative">
+        <div className="backbtn absolute left-0 top-5">
+          <span
+            className="flex items-center justify-center w-8 h-8 rounded-full bg-[rgba(0,0,0,0.7)] text-center cursor-pointer hover:opacity-80"
+            onClick={() => router.back()}
+          >
+            <BiArrowBack className="text-white text-xl" />
+          </span>
+        </div>
         <div className="lg:w-4/5 w-full mx-auto flex flex-wrap">
           <img
             alt="ecommerce"
