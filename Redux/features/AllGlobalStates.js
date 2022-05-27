@@ -2,10 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   items: [],
-  itemQty: 0,
+  itemQty: 1,
   itemForBuy: [],
-  itemForBuyQty: 1,
-  AllItemsId: [],
 };
 
 export const GlobalSlice = createSlice({
@@ -42,21 +40,17 @@ export const GlobalSlice = createSlice({
     },
     // ************
 
-    // ****state for Item for buy Qty ******
-    AddItemForBuyQty: (state, action) => {
-      state.itemForBuyQty = state.itemForBuyQty + 1;
+    // *******State for the item qty ****
+    setItemQty: (state, action) => {
+      state.itemQty = action.payload;
     },
-    RemoveItemForBuyQty: (state, action) => {
-      state.itemForBuyQty = state.itemForBuyQty - 1;
-
-      if (state.itemForBuyQty <= 1) {
-        state.itemForBuyQty = 1;
-      }
+    IncreaseItemQty: (state, action) => {
+      state.itemQty = state.itemQty + 1;
     },
-    // ************
-    setAllItemsId: (state, action) => {
-      state.AllItemsId.push(action.payload);
+    DecreaseItemQty: (state, action) => {
+      state.itemQty = state.itemQty - 1;
     },
+    // **************
   },
 });
 
@@ -64,22 +58,16 @@ export const {
   setItems,
   removeItems,
   removeAllItems,
-  setItemQty,
-  increaseItemQty,
-  decreaseItemQty,
+  removeItemForBuy,
   setItemForBuy,
   setSingalItemForBuy,
   clearItemForBuy,
-  removeItemForBuy,
-  AddItemForBuyQty,
-  RemoveItemForBuyQty,
-  setAllItemsId,
+  setItemQty,
+  IncreaseItemQty,
+  DecreaseItemQty,
 } = GlobalSlice.actions;
 
 export const selectItems = (state) => state.globalStates.items;
 export const selectItemQty = (state) => state.globalStates.itemQty;
 export const selectItemForBuy = (state) => state.globalStates.itemForBuy;
-export const selectItemForBuyQty = (state) => state.globalStates.itemForBuyQty;
-export const selectItemForBuyMsg = (state) => state.globalStates.itemForBuyMsg;
-export const selectAllItemsId = (state) => state.globalStates.AllItemsId;
 export default GlobalSlice.reducer;

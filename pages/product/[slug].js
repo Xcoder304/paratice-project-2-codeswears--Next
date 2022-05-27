@@ -1,6 +1,6 @@
 import React, { useLayoutEffect } from "react";
 import { useEffect, useState } from "react";
-import mongoose, { ConnectionStates } from "mongoose";
+import mongoose from "mongoose";
 import Product from "../../modals/Product";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -76,7 +76,7 @@ const Slug = ({ product, varients }) => {
   }, [router.query]);
 
   const GetNewVarient = async (newcolor, newsize) => {
-    let url = `http://localhost:3000/product/${varients[newcolor][newsize]["slug"]}`;
+    let url = `${process.env.HOSTING_NAME}/product/${varients[newcolor][newsize]["slug"]}`;
     window.location = url;
   };
 
@@ -117,6 +117,7 @@ const Slug = ({ product, varients }) => {
           color: product.color,
           price: product.price,
           availableQty: product.availableQty,
+          userSelectedQty: "1",
         };
 
         let f = await fetch(`${process.env.HOSTING_NAME}/api/savetocart`, {

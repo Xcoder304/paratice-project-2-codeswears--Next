@@ -14,6 +14,7 @@ const CartSchema = new Schema(
     color: { type: String },
     price: { type: Number, required: true },
     availableQty: { type: String, required: true },
+    userSelectedQty: { type: String, required: true },
   },
   { timestamps: true }
 );

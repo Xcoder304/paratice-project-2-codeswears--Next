@@ -3,37 +3,110 @@ import { AiFillDelete, AiOutlineMinus } from "react-icons/ai";
 import { MdOutlineAdd } from "react-icons/md";
 import { setItemForBuy } from "../Redux/features/AllGlobalStates";
 import { useRouter } from "next/router";
-import { useSelector, useDispatch } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useDispatch } from "react-redux";
 import mongoose from "mongoose";
-// import Cart from "../modals/Cart";
 
 const Checkout = ({ data }) => {
-  // variables
   const [Product, setProduct] = useState(data);
+  const [iteminfo, setiteminfo] = useState({});
+  const [getTotalItem, setTotalItem] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
   let userValue;
+
   const router = useRouter();
   const dispatch = useDispatch();
-
-  // for getting the price
-  const totalPrice = Product.reduce(
-    (amount, item) => parseInt(item.price) * parseInt(amount),
-    +0
-  );
 
   if (typeof window !== "undefined") {
     userValue = localStorage.getItem("token");
   }
 
-  // ****Effects
+  // ****Effects**************
+
+  // rediecting the user
   useLayoutEffect(() => {
     if (userValue == null) {
       router.push("/login");
     }
   }, [userValue]);
 
-  // ************
+  // set the couter accouding to the aviable Qty
+  useLayoutEffect(() => {
+    Product.forEach((data) => {
+      if (data._id == iteminfo.id) {
+        if (iteminfo.userSelectedQty < 1) {
+          data.userSelectedQty = 1;
+        }
+        if (iteminfo.userSelectedQty > iteminfo.availableQty) {
+          data.userSelectedQty = iteminfo.availableQty;
+          toast.error(`Sorry Only ${iteminfo.availableQty} are available`, {
+            position: "bottom-left",
+            autoClose: 1000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+      }
+      setTotalItem(data.userSelectedQty);
+    });
+  }, [iteminfo]);
+
+  // getting the total items
+  useLayoutEffect(() => {
+    let itemsSum = Product.map((data) => {
+      return parseInt(data.price * data.userSelectedQty);
+    });
+
+    setTotalItem(itemsSum);
+  }, [Product, iteminfo, router.query]);
+
+  // getting the total price
+  useLayoutEffect(() => {
+    let initialValue = 0;
+    let sum = getTotalItem.reduce((totalValue, currentValue) => {
+      return totalValue + currentValue;
+    }, initialValue);
+
+    setTotalPrice(sum);
+  }, [router.query, getTotalItem, Product]);
+
+  // **************************
 
   // All funtions
+  const haddelProductQty = (productId, value) => {
+    Product.forEach((data) => {
+      if (data._id == productId) {
+        if (value == "add") {
+          data.userSelectedQty = parseInt(data.userSelectedQty) + 1;
+        }
+        if (value == "remove") {
+          data.userSelectedQty = parseInt(data.userSelectedQty) - 1;
+        }
+        setiteminfo({
+          userSelectedQty: data.userSelectedQty,
+          availableQty: data.availableQty,
+          id: productId,
+        });
+      }
+    });
+    router.push(`${process.env.HOSTING_NAME}/cart`);
+  };
+
+  const BUY_SINGAL_THE_PRODUCT = (id) => {
+    const item = Product.filter((data) => data._id == id);
+    dispatch(setItemForBuy(item));
+    router.push("/checkout");
+  };
+
+  const BUY_ALL_PRODUCTS = () => {
+    dispatch(setItemForBuy(Product));
+    router.push("/checkout");
+  };
+
   const DelectItem = async (e, productId, productIndex) => {
     e.preventDefault();
 
@@ -69,17 +142,6 @@ const Checkout = ({ data }) => {
     router.push(`${process.env.HOSTING_NAME}/cart`);
   };
 
-  const BUY_SINGAL_THE_PRODUCT = (id) => {
-    const item = Product.filter((data) => data._id == id);
-    dispatch(setItemForBuy(item));
-    router.push("/checkout");
-  };
-
-  const BUY_ALL_PRODUCTS = () => {
-    dispatch(setItemForBuy(Product));
-    router.push("/checkout");
-  };
-
   return (
     <div
       className="main flex flex-col-reverse justify-start items-start md:flex-row w-full h-90 px-4 gap-3 py-10 relative"
@@ -95,11 +157,14 @@ const Checkout = ({ data }) => {
             </h4>
           ) : (
             Product.map(
-              ({ _id, title, price, img, size, color, slug }, index) => {
+              (
+                { _id, title, price, img, size, color, slug, userSelectedQty },
+                index
+              ) => {
                 return (
                   <div
                     className="items flex mb-4 flex-col md:flex-row justify-center items-start md:items-center py-2 px-3 bg-slate-50 rounded-md border-2 border-[#8181811a]"
-                    key={_id}
+                    key={index}
                   >
                     {/*  */}
                     <div
@@ -134,13 +199,19 @@ const Checkout = ({ data }) => {
 
                     {/*  */}
                     <div className="sec3 w-full md:w-[23.3%]  flex items-center">
-                      <button className="inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer">
+                      <button
+                        className="inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
+                        onClick={() => haddelProductQty(_id, "remove")}
+                      >
                         <AiOutlineMinus className="text-2xl m-auto" />
                       </button>
                       <span className="font-bold text-gray-800 select-none">
-                        1
+                        {userSelectedQty}
                       </span>
-                      <button className="inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer">
+                      <button
+                        className="inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-2 px-4  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
+                        onClick={() => haddelProductQty(_id, "add")}
+                      >
                         <MdOutlineAdd className="text-2xl m-auto" />
                       </button>
                     </div>
@@ -184,7 +255,7 @@ const Checkout = ({ data }) => {
           <span className="font-medium text-base select-none text-gray-600 capitalize ">
             total
           </span>
-          <p className="font-bold text-[#c5b522] select-none">$66</p>
+          <p className="font-bold text-[#c5b522] select-none">${totalPrice}</p>
         </div>
         <div className="w-full mt-4 gap-4  flex items-center justify-center">
           <form onSubmit={CLEAR_THE_CART} method="POST" className="flex-1">
@@ -200,6 +271,17 @@ const Checkout = ({ data }) => {
           </button>
         </div>
       </div>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={1000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+      />
     </div>
   );
 };
@@ -209,7 +291,9 @@ export async function getServerSideProps(context) {
     await mongoose.connect(process.env.MONGO_URI);
   }
 
-  let fetchproducts = await fetch("http://localhost:3000/api/getcartproducts");
+  let fetchproducts = await fetch(
+    `${process.env.HOSTING_NAME}/api/getcartproducts`
+  );
   let res = await fetchproducts.json();
   // let products = await Cart.find();
 
