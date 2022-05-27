@@ -98,12 +98,19 @@ const Checkout = ({ data }) => {
 
   const BUY_SINGAL_THE_PRODUCT = (id) => {
     const item = Product.filter((data) => data._id == id);
-    dispatch(setItemForBuy(item));
+    localStorage.setItem(
+      `${process.env.NEXT_PUBLIC_ITEMFORBUY}`,
+      JSON.stringify(item)
+    );
     router.push("/checkout");
   };
 
   const BUY_ALL_PRODUCTS = () => {
-    dispatch(setItemForBuy(Product));
+    localStorage.setItem(
+      `${process.env.NEXT_PUBLIC_ITEMFORBUY}`,
+      JSON.stringify(Product)
+    );
+    // dispatch(setItemForBuy(Product));
     router.push("/checkout");
   };
 

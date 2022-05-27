@@ -82,14 +82,20 @@ const Slug = ({ product, varients }) => {
 
   const BUY_THE_PRODUCT = () => {
     if (user) {
-      dispatch(clearItemForBuy());
-      dispatch(setSingalItemForBuy(product));
+      localStorage.setItem(
+        `${process.env.NEXT_PUBLIC_ITEMFORBUY}`,
+        JSON.stringify([{ ...product, userSelectedQty: 1 }])
+      );
+      // dispatch(clearItemForBuy());
+      // dispatch(setSingalItemForBuy(product));
       router.push("/checkout");
     }
     if (user == null) {
       router.push("/login");
     }
   };
+
+  console.log("name", process.env.NEXT_PUBLIC_ITEMFORBUY);
 
   // for set the product to cart
 

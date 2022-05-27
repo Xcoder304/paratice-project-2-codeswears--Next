@@ -5,9 +5,6 @@ import { MdOutlineAdd } from "react-icons/md";
 import {
   removeItemForBuy,
   selectItemForBuy,
-  selectItemForBuyQty,
-  AddItemForBuyQty,
-  RemoveItemForBuyQty,
 } from "../Redux/features/AllGlobalStates";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,12 +12,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 
 const Checkout = () => {
-  const itemforbuy = useSelector(selectItemForBuy);
-  const QtyOfitem = useSelector(selectItemForBuyQty);
-  const [hideQtybtn, sethideQtybtn] = useState({
-    addbtn: false,
-    removebtn: false,
-  });
+  const [itemforbuy, setitemforbuy] = useState(null);
+  const [iteminfo, setiteminfo] = useState({});
+
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -29,40 +23,81 @@ const Checkout = () => {
   };
 
   useLayoutEffect(() => {
-    if (itemforbuy.length == 0) {
+    if (localStorage.getItem(`${process.env.NEXT_PUBLIC_ITEMFORBUY}`)) {
+      setitemforbuy(
+        JSON.parse(
+          localStorage.getItem(`${process.env.NEXT_PUBLIC_ITEMFORBUY}`)
+        )
+      );
+    }
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!localStorage.getItem(`${process.env.NEXT_PUBLIC_ITEMFORBUY}`)) {
       RedirectBack();
     }
-  }, [itemforbuy]);
+    if (itemforbuy) {
+      if (itemforbuy.length == 0) {
+        RedirectBack();
+      }
+    }
+  }, [itemforbuy, router.query]);
 
-  // useLayoutEffect(() => {
-  //   if (userSelectedQty) {
-  //     if (userSelectedQty <= itemforbuy?.availableQty) {
-  //       sethideQtybtn({ addbtn: false, removebtn: true });
-  //     }
-  //     if (userSelectedQty > 1) {
-  //       sethideQtybtn({ addbtn: false, removebtn: false });
-  //     }
-  //     if (userSelectedQty >= itemforbuy?.availableQty) {
-  //       sethideQtybtn({ addbtn: true, removebtn: false });
-  //     }
-  //   } else {
-  //     if (QtyOfitem <= itemforbuy?.availableQty) {
-  //       sethideQtybtn({ addbtn: false, removebtn: true });
-  //     }
-  //     if (QtyOfitem > 1) {
-  //       sethideQtybtn({ addbtn: false, removebtn: false });
-  //     }
-  //     if (QtyOfitem >= itemforbuy?.availableQty) {
-  //       sethideQtybtn({ addbtn: true, removebtn: false });
-  //     }
-  //   }
-  // }, [userSelectedQty, QtyOfitem]);
+  useLayoutEffect(() => {
+    if (itemforbuy) {
+      itemforbuy.forEach((data) => {
+        if (data._id || id == iteminfo.id) {
+          if (iteminfo.userSelectedQty < 1) {
+            data.userSelectedQty = 1;
+          }
+          if (iteminfo.userSelectedQty > iteminfo.availableQty) {
+            data.userSelectedQty = iteminfo.availableQty;
+            setTimeout(() => {
+              toast.error(`Sorry Only ${iteminfo.availableQty} are available`, {
+                position: "bottom-left",
+                autoClose: 1000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+              });
+            }, 300);
+          }
+        }
+      });
+    }
+  }, [iteminfo]);
 
   // funtions
+  const haddelProductQty = (productId, value) => {
+    itemforbuy.forEach((data) => {
+      if (data._id == productId) {
+        if (value == "add") {
+          data.userSelectedQty = parseInt(data.userSelectedQty) + 1;
+        }
+        if (value == "remove") {
+          data.userSelectedQty = parseInt(data.userSelectedQty) - 1;
+        }
+        setiteminfo({
+          userSelectedQty: data.userSelectedQty,
+          availableQty: data.availableQty,
+          id: productId,
+        });
+      }
+      router.push(`${process.env.HOSTING_NAME}/checkout`);
+    });
+  };
 
   const DELECT_PRODUCT = (e, productIndex) => {
     e.preventDefault();
-    dispatch(removeItemForBuy(productIndex));
+    itemforbuy.splice(productIndex, 1);
+    localStorage.setItem(
+      `${process.env.NEXT_PUBLIC_ITEMFORBUY}`,
+      JSON.stringify(itemforbuy)
+    );
+
+    router.push(`${process.env.HOSTING_NAME}/checkout`);
 
     setTimeout(() => {
       toast.success("Item Removed", {
@@ -158,16 +193,8 @@ const Checkout = () => {
                   </span>
                   <div className="flex w-full flex-row items-center">
                     <button
-                      className={`inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-1 px-2  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer ${
-                        hideQtybtn.removebtn
-                          ? "cursor-not-allowed opacity-50 pointer-events-none"
-                          : ""
-                      }`}
-                      onClick={() => {
-                        userSelectedQty
-                          ? setuserSelectedQty(userSelectedQty - 1)
-                          : dispatch(RemoveItemForBuyQty());
-                      }}
+                      className="inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-1 px-2  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
+                      onClick={() => haddelProductQty(_id || id, "remove")}
                     >
                       <AiOutlineMinus className="text-2xl m-auto" />
                     </button>
@@ -175,16 +202,8 @@ const Checkout = () => {
                       {userSelectedQty}
                     </span>
                     <button
-                      className={`inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-1 px-2  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer ${
-                        hideQtybtn.addbtn
-                          ? "cursor-not-allowed opacity-50 pointer-events-none"
-                          : ""
-                      }`}
-                      onClick={() => {
-                        userSelectedQty
-                          ? setuserSelectedQty(userSelectedQty + 1)
-                          : dispatch(AddItemForBuyQty());
-                      }}
+                      className="inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-1 px-2  focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
+                      onClick={() => haddelProductQty(_id || id, "add")}
                     >
                       <MdOutlineAdd className="text-2xl m-auto" />
                     </button>
@@ -256,13 +275,6 @@ const Checkout = () => {
               className="mb-3 block px-2.5 py-4 w-full text-sm placeholder:text-[13px] text-gray-900 bg-gr.ay-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
           </div>
-          {/* 
-          <label
-            htmlFor="message"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400"
-          >
-            Your Address
-          </label> */}
           <textarea
             id="message"
             rows="4"
