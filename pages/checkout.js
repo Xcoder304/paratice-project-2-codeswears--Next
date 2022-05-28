@@ -2,20 +2,41 @@ import React from "react";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { AiFillDelete, AiOutlineMinus } from "react-icons/ai";
 import { MdOutlineAdd } from "react-icons/md";
-import {
-  removeItemForBuy,
-  selectItemForBuy,
-} from "../Redux/features/AllGlobalStates";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
+
+import CheckoutPopUp from "./CheckoutPopUp";
 
 const Checkout = () => {
   const [itemforbuy, setitemforbuy] = useState(null);
   const [iteminfo, setiteminfo] = useState({});
+  const [disableBtn, setdisableBtn] = useState(true);
+  const [getTotalItem, setTotalItem] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
 
-  const dispatch = useDispatch();
+  // state for user details
+  const [ResetuserDetails, setResetuserDetails] = useState({
+    name: "",
+    email: "",
+    phonenumber: "",
+    pincode: "",
+    state: "",
+    city: "",
+    address: "",
+  });
+  let [userDetails, setuserDetails] = useState({
+    name: "",
+    email: "",
+    phonenumber: "",
+    pincode: "",
+    state: "",
+    city: "",
+    address: "",
+  });
+  const [showPopup, setshowPopup] = useState(false);
+
+  // const dispatch = useDispatch();
   const router = useRouter();
 
   const RedirectBack = () => {
@@ -43,10 +64,11 @@ const Checkout = () => {
     }
   }, [itemforbuy, router.query]);
 
+  // checking if more product are aviable or not
   useLayoutEffect(() => {
     if (itemforbuy) {
       itemforbuy.forEach((data) => {
-        if (data._id || id == iteminfo.id) {
+        if (data._id == iteminfo.id) {
           if (iteminfo.userSelectedQty < 1) {
             data.userSelectedQty = 1;
           }
@@ -68,6 +90,41 @@ const Checkout = () => {
       });
     }
   }, [iteminfo]);
+
+  // form validation
+  useLayoutEffect(() => {
+    if (
+      userDetails.name.length > 2 &&
+      userDetails.email.length > 7 &&
+      userDetails.phonenumber.length > 4 &&
+      userDetails.pincode.length > 4 &&
+      userDetails.address.length > 10
+    ) {
+      setdisableBtn(false);
+    } else {
+      setdisableBtn(true);
+    }
+  }, [userDetails]);
+
+  // getting the total item
+  useLayoutEffect(() => {
+    if (itemforbuy) {
+      let itemsSum = itemforbuy.map((data) => {
+        return parseInt(data.price * data.userSelectedQty);
+      });
+      setTotalItem(itemsSum);
+    }
+  }, [itemforbuy, iteminfo, router.query]);
+
+  // getting the total price
+  useLayoutEffect(() => {
+    let initialValue = 0;
+    let sum = getTotalItem.reduce((totalValue, currentValue) => {
+      return totalValue + currentValue;
+    }, initialValue);
+
+    setTotalPrice(sum);
+  }, [router.query, getTotalItem, itemforbuy]);
 
   // funtions
   const haddelProductQty = (productId, value) => {
@@ -117,7 +174,16 @@ const Checkout = () => {
       no item founded
     </h4>
   ) : (
-    <div className="w-full px-2 py-6">
+    <div className="w-full  relative">
+      {showPopup && (
+        <CheckoutPopUp
+          setshowPopup={setshowPopup}
+          userDetails={userDetails}
+          itemforbuy={itemforbuy}
+          totalPrice={totalPrice}
+          ResetuserDetails={ResetuserDetails}
+        />
+      )}
       {itemforbuy.map(
         (
           {
@@ -135,7 +201,7 @@ const Checkout = () => {
           index
         ) => {
           return (
-            <div className="product mb-5" key={index}>
+            <div className="product mb-5 px-2 pt-2" key={index}>
               <div className="item w-[80%] mx-auto md:mx-0 flex p-2 items-center justify-center md:justify-between  flex-wrap bg-slate-50 rounded-md border-2 border-[#59c9259a]">
                 <div
                   className="sec1 flex items-start cursor-pointer mb-3"
@@ -237,12 +303,24 @@ const Checkout = () => {
               placeholder="Name"
               required
               className="mb-3 block px-2.5 py-4 w-full text-sm text-gray-900 bg-gray-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              value={userDetails.name}
+              name="name"
+              onChange={(e) =>
+                setuserDetails({ ...userDetails, name: e.target.value })
+              }
+              autoComplete={"off"}
             />
             <input
               type="email"
               placeholder="Email"
               required
               className="mb-3 block px-2.5 py-4 w-full text-sm text-gray-900 bg-gray-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              value={userDetails.email}
+              name="email"
+              onChange={(e) =>
+                setuserDetails({ ...userDetails, email: e.target.value })
+              }
+              autoComplete={"off"}
             />
           </div>
 
@@ -252,12 +330,24 @@ const Checkout = () => {
               placeholder="PhoneNumber"
               required
               className="mb-3 block px-2.5 py-4 w-full text-sm text-gray-900 bg-gray-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              value={userDetails.phonenumber}
+              name="phonenumber"
+              onChange={(e) =>
+                setuserDetails({ ...userDetails, phonenumber: e.target.value })
+              }
+              autoComplete={"off"}
             />
             <input
               type="tel"
               placeholder="PinCode(Optional But Check if the Product is in your area)"
               required
               className="mb-3 block px-2.5 py-4 w-full text-sm placeholder:text-[13px] text-gray-900 bg-gr.ay-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              value={userDetails.pincode}
+              name="pincode"
+              onChange={(e) =>
+                setuserDetails({ ...userDetails, pincode: e.target.value })
+              }
+              autoComplete={"off"}
             />
           </div>
 
@@ -267,12 +357,24 @@ const Checkout = () => {
               placeholder="State"
               required
               className="mb-3 block px-2.5 py-4 w-full text-sm text-gray-900 bg-gray-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              value={userDetails.state}
+              name="state"
+              onChange={(e) =>
+                setuserDetails({ ...userDetails, state: e.target.value })
+              }
+              autoComplete={"off"}
             />
             <input
               type="text"
               placeholder="City"
               required
               className="mb-3 block px-2.5 py-4 w-full text-sm placeholder:text-[13px] text-gray-900 bg-gr.ay-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              value={userDetails.city}
+              name="city"
+              onChange={(e) =>
+                setuserDetails({ ...userDetails, city: e.target.value })
+              }
+              autoComplete={"off"}
             />
           </div>
           <textarea
@@ -280,11 +382,22 @@ const Checkout = () => {
             rows="4"
             className="block p-2.5 w-[100%] text-sm text-gray-900 bg-gray-50 rounded-lg border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Your Address..."
+            value={userDetails.address}
+            name="address"
+            onChange={(e) =>
+              setuserDetails({ ...userDetails, address: e.target.value })
+            }
+            autoComplete={"off"}
           ></textarea>
 
           <button
             type="submit"
-            className="w-[150px] font-bold bg-[#1a1818] text-white mt-4 py-[10px] rounded-md ease-in transition-opacity hover:opacity-80 select-none"
+            className={`w-[150px] font-bold bg-[#1a1818] text-white mt-4 py-[10px] rounded-md ease-in transition-opacity hover:opacity-80 select-none ${
+              disableBtn && "opacity-40 pointer-events-none"
+            }`}
+            onClick={(e) => {
+              e.preventDefault(), setshowPopup(true);
+            }}
           >
             Proceed to Pay
           </button>
