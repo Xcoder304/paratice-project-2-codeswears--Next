@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import Image from "next/image";
 import { MdClose } from "react-icons/md";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CheckoutPopUp = ({
   setshowPopup,
@@ -14,12 +16,66 @@ const CheckoutPopUp = ({
   let [Expirationdate, setExpirationdate] = useState("");
   let [cvv, setcvv] = useState("");
   let [TermsAndCondition, setTermsAndCondition] = useState(false);
+  const [disableBtn, setdisabeBtn] = useState(true);
 
   const CheckTheVal = (e) => {
     if (e.target.checked == true) {
       setTermsAndCondition(true);
     } else {
       setTermsAndCondition(false);
+    }
+  };
+
+  useLayoutEffect(() => {
+    if (
+      cardNumber.length > 14 &&
+      nameonCard.length > 2 &&
+      Expirationdate.length > 4 &&
+      cvv.length > 3 &&
+      TermsAndCondition == true
+    ) {
+      setdisabeBtn(false);
+    } else {
+      setdisabeBtn(true);
+    }
+  }, [cardNumber, nameonCard, Expirationdate, cvv, TermsAndCondition]);
+
+  const ORDER_THR_PRODUCT = async (e) => {
+    e.preventDefault();
+    let randomID = Math.floor(Math.random() * new Date() * 10 * 100 * 20 * 30);
+    const data = {
+      orderId: randomID,
+      userDetails: userDetails,
+      cardDetails: {
+        card_Number: cardNumber,
+        Name_on_card: nameonCard,
+        Expiration_date: Expirationdate,
+        CVV: cvv,
+      },
+      productsInfo: itemforbuy,
+      totalPrice: totalPrice,
+    };
+
+    let f = await fetch(`${process.env.HOSTING_NAME}/api/order`, {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    try {
+      let res = await f.json();
+      toast.success("Your order is compeleted thanks for shopping 😁", {
+        position: "bottom-left",
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+    } catch (err) {
+      console.error("error", err);
     }
   };
 
@@ -49,7 +105,7 @@ const CheckoutPopUp = ({
             height="50"
           ></Image>
         </div>
-        <form className="w-full md:mt-3">
+        <form className="w-full md:mt-3" method="POST">
           <div className="w-[90%] mx-auto md:mt-3">
             <label
               className="block text-gray-700 text-sm font-bold mb-1 md:mb-2"
@@ -145,12 +201,26 @@ const CheckoutPopUp = ({
 
           <button
             type="submit"
-            className="w-[150px]  font-bold bg-[#1a1818] text-white mt-3 md:mt-7 mx-5 py-[10px] rounded-md ease-in transition-opacity hover:opacity-80 select-none"
+            className={`w-[150px]  font-bold bg-[#1a1818] text-white mt-3 md:mt-7 mx-5 py-[10px] rounded-md ease-in transition-opacity hover:opacity-80 select-none ${
+              disableBtn && "opacity-40 pointer-events-none"
+            }`}
+            onClick={ORDER_THR_PRODUCT}
           >
             Pay ${totalPrice} Now
           </button>
         </form>
       </div>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={1000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+      />
     </div>
   );
 };
