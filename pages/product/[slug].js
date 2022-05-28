@@ -3,10 +3,6 @@ import { useEffect, useState } from "react";
 import mongoose from "mongoose";
 import Product from "../../modals/Product";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setSingalItemForBuy,
-  clearItemForBuy,
-} from "../../Redux/features/AllGlobalStates";
 import { selectuserVal } from "../../Redux/features/UserState";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -40,7 +36,7 @@ const Slug = ({ product, varients }) => {
     if (res.includes(parseInt(userPin))) {
       setIsService(true);
     } else {
-      +setIsService(false);
+      setIsService(false);
     }
 
     // now if the user entered code matches to city pin code then get the city Name

@@ -90,7 +90,7 @@ const Header = () => {
                     <FaUser className="text-[18px]" />
                   </span>
                 </button>
-                <ul className="absolute hidden right-0 text-gray-700 pt-1 w-[160px] group-hover:block bg-white shadow-md">
+                <ul className="absolute hidden right-0 text-gray-700 pt-1 w-[160px] group-hover:block bg-white shadow-md z-30">
                   <li className="item">
                     <a className="rounded-t font-bold my-2 text-gray-700 capitalize hover:bg-slate-200 py-3 px-4 block whitespace-no-wrap cursor-pointer">
                       My Account

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { MdClose } from "react-icons/md";
 
@@ -9,8 +9,22 @@ const CheckoutPopUp = ({
   totalPrice,
   ResetuserDetails,
 }) => {
+  let [cardNumber, setcardNumber] = useState("");
+  let [nameonCard, setnameonCard] = useState("");
+  let [Expirationdate, setExpirationdate] = useState("");
+  let [cvv, setcvv] = useState("");
+  let [TermsAndCondition, setTermsAndCondition] = useState(false);
+
+  const CheckTheVal = (e) => {
+    if (e.target.checked == true) {
+      setTermsAndCondition(true);
+    } else {
+      setTermsAndCondition(false);
+    }
+  };
+
   return (
-    <div className="w-screen h-[200vw] fixed bg-[rgba(0,0,0,0.4)] z-50 backdrop-blur-sm flex items-start justify-center">
+    <div className="w-screen h-[200vw] fixed bg-[rgba(0,0,0,0.4)] z-10 backdrop-blur-sm flex items-start justify-center">
       <div className="w-[90vw] md:w-[470px] h-auto bg-white border-0 rounded-[5px] mt-3 md:mt-1 pb-2 relative">
         <div
           className="w-10 h-10 absolute right-2 top-2 bg-gray-100 border-0 rounded-full flex items-center justify-center cursor-pointer"
@@ -50,6 +64,9 @@ const CheckoutPopUp = ({
               id="cardnumber"
               maxLength="23"
               className="mb-3 block px-2.5 py-2 md:py-4 w-full text-sm text-gray-900 bg-gray-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              name="cardNumber"
+              value={cardNumber}
+              onChange={(e) => setcardNumber(e.target.value)}
             />
           </div>
           <div className="w-[90%] mx-auto md:mt-3">
@@ -65,6 +82,9 @@ const CheckoutPopUp = ({
               required
               id="nameoncard"
               className="mb-3 block px-2.5 py-2 md:py-4  w-full text-sm text-gray-900 bg-gray-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              name="nameonCard"
+              value={nameonCard}
+              onChange={(e) => setnameonCard(e.target.value)}
             />
           </div>
           <div className="flex flex-col md:flex-row items-center w-[90%] gap-x-3 md:gap-x-3 mx-auto md:mt-3">
@@ -80,7 +100,9 @@ const CheckoutPopUp = ({
                 required
                 id="Expirationdate"
                 className="mb-3 block px-2.5 py-2 md:py-4  w-full text-sm text-gray-900 bg-gray-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                onChange={(e) => setdate(e.target.value)}
+                name="Expirationdate"
+                value={Expirationdate}
+                onChange={(e) => setExpirationdate(e.target.value)}
               />
             </div>
 
@@ -98,6 +120,9 @@ const CheckoutPopUp = ({
                 id="cvv"
                 maxLength="4"
                 className="mb-3 block px-2.5 py-2 md:py-4  w-full text-sm text-gray-900 bg-gray-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                name="cvv"
+                value={cvv}
+                onChange={(e) => setcvv(e.target.value)}
               />
             </div>
           </div>
@@ -105,8 +130,9 @@ const CheckoutPopUp = ({
             <input
               className="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
               type="checkbox"
-              value=""
+              value="Allow"
               id="flexCheckChecked"
+              onChange={CheckTheVal}
               required
             />
             <label

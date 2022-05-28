@@ -14,6 +14,7 @@ const Checkout = () => {
   const [disableBtn, setdisableBtn] = useState(true);
   const [getTotalItem, setTotalItem] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [showPopup, setshowPopup] = useState(false);
 
   // state for user details
   const [ResetuserDetails, setResetuserDetails] = useState({
@@ -21,8 +22,7 @@ const Checkout = () => {
     email: "",
     phonenumber: "",
     pincode: "",
-    state: "",
-    city: "",
+    cityName: "",
     address: "",
   });
   let [userDetails, setuserDetails] = useState({
@@ -30,11 +30,11 @@ const Checkout = () => {
     email: "",
     phonenumber: "",
     pincode: "",
-    state: "",
-    city: "",
+    cityName: "",
     address: "",
   });
-  const [showPopup, setshowPopup] = useState(false);
+  const [isServiceAvailable, setisServiceAvailable] = useState(null);
+  const [rerender, setRerender] = useState(false);
 
   // const dispatch = useDispatch();
   const router = useRouter();
@@ -97,12 +97,16 @@ const Checkout = () => {
       userDetails.name.length > 2 &&
       userDetails.email.length > 7 &&
       userDetails.phonenumber.length > 4 &&
-      userDetails.pincode.length > 4 &&
+      userDetails.pincode.length > 2 &&
       userDetails.address.length > 10
     ) {
       setdisableBtn(false);
     } else {
       setdisableBtn(true);
+    }
+
+    if (userDetails.pincode.length == 0) {
+      setisServiceAvailable(null);
     }
   }, [userDetails]);
 
@@ -168,6 +172,46 @@ const Checkout = () => {
       });
     }, 1000);
   };
+
+  const fetchData = async () => {
+    const f = await fetch(`${process.env.HOSTING_NAME}/api/pincode`);
+    const data = await f.json();
+    let Name = null;
+    const res = data.map((data) => {
+      return data.code;
+    });
+
+    if (res.includes(parseInt(userDetails.pincode))) {
+      setisServiceAvailable(true);
+    } else {
+      setisServiceAvailable(false);
+    }
+
+    res.forEach((item) => {
+      if (item == userDetails.pincode) {
+        data.filter((x) => {
+          if (x.code == userDetails.pincode) {
+            return (Name = x.name);
+          }
+        });
+      }
+    });
+    setuserDetails({ ...userDetails, cityName: Name });
+  };
+
+  const PROCEED_TO_PAY = (e) => {
+    e.preventDefault();
+
+    fetchData();
+
+    setTimeout(() => {
+      if (isServiceAvailable && userDetails.cityName) {
+        setshowPopup(true);
+      }
+    }, 1000);
+  };
+
+  console.log(userDetails.cityName, isServiceAvailable);
 
   return itemforbuy == null ? (
     <h4 className="font-bold text-gray-800 text-2xl mx-10 my-2 capitalize select-none py-28">
@@ -337,50 +381,42 @@ const Checkout = () => {
               }
               autoComplete={"off"}
             />
-            <input
-              type="tel"
-              placeholder="PinCode(Optional But Check if the Product is in your area)"
-              required
-              className="mb-3 block px-2.5 py-4 w-full text-sm placeholder:text-[13px] text-gray-900 bg-gr.ay-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              value={userDetails.pincode}
-              name="pincode"
-              onChange={(e) =>
-                setuserDetails({ ...userDetails, pincode: e.target.value })
-              }
-              autoComplete={"off"}
-            />
+            <div className="relative w-full">
+              <input
+                type="tel"
+                placeholder="PinCode(Optional But Check if the Product is in your area)"
+                required
+                className="mb-3 block px-2.5 py-4 w-full text-sm placeholder:text-[13px] text-gray-900 bg-gr.ay-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                value={userDetails.pincode}
+                name="pincode"
+                onChange={(e) =>
+                  setuserDetails({ ...userDetails, pincode: e.target.value })
+                }
+                autoComplete={"off"}
+              />
+              <div className="text-left w-full absolute -bottom-3 left-0 select-none">
+                {isServiceAvailable ? (
+                  <p className="text-green-600 capitalize font-base">
+                    this product is aviable in {userDetails.cityName}
+                  </p>
+                ) : isServiceAvailable == null ? (
+                  ""
+                ) : (
+                  <p className="text-red-600 capitalize font-base">
+                    sorry we cant devlivey this project in{" "}
+                    {userDetails.cityName
+                      ? userDetails.cityName
+                      : "in your city"}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-col md:flex-row items-center w-[90%] gap-x-3 md:gap-x-3">
-            <input
-              type="text"
-              placeholder="State"
-              required
-              className="mb-3 block px-2.5 py-4 w-full text-sm text-gray-900 bg-gray-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              value={userDetails.state}
-              name="state"
-              onChange={(e) =>
-                setuserDetails({ ...userDetails, state: e.target.value })
-              }
-              autoComplete={"off"}
-            />
-            <input
-              type="text"
-              placeholder="City"
-              required
-              className="mb-3 block px-2.5 py-4 w-full text-sm placeholder:text-[13px] text-gray-900 bg-gr.ay-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              value={userDetails.city}
-              name="city"
-              onChange={(e) =>
-                setuserDetails({ ...userDetails, city: e.target.value })
-              }
-              autoComplete={"off"}
-            />
-          </div>
           <textarea
             id="message"
             rows="4"
-            className="block p-2.5 w-[100%] text-sm text-gray-900 bg-gray-50 rounded-lg border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="block p-2.5 w-[100%] text-sm text-gray-900 bg-gray-50 rounded-lg border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 mt-5"
             placeholder="Your Address..."
             value={userDetails.address}
             name="address"
@@ -395,9 +431,7 @@ const Checkout = () => {
             className={`w-[150px] font-bold bg-[#1a1818] text-white mt-4 py-[10px] rounded-md ease-in transition-opacity hover:opacity-80 select-none ${
               disableBtn && "opacity-40 pointer-events-none"
             }`}
-            onClick={(e) => {
-              e.preventDefault(), setshowPopup(true);
-            }}
+            onClick={PROCEED_TO_PAY}
           >
             Proceed to Pay
           </button>
