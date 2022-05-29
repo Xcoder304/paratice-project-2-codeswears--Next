@@ -21,6 +21,35 @@ const Slug = ({ product, varients }) => {
   let [color, setcolor] = useState(product.color);
   let [size, setsize] = useState(product.size);
 
+  useEffect(() => {
+    setcolor(product.color);
+    setsize(product.size);
+  }, [router.query]);
+
+  useEffect(() => {
+    if (userPin == 0) {
+      setIsService(null);
+    }
+  }, [userPin]);
+
+  // fetching the data saved cart data
+  useLayoutEffect(() => {
+    const fetchData = async () => {
+      let f = await fetch(`${process.env.HOSTING_NAME}/api/getcartproducts`);
+      let data = await f.json();
+
+      let result = data.map((data) => data.slug);
+
+      setSavedProducts(result);
+    };
+    fetchData();
+  }, [router.query]);
+
+  const GetNewVarient = async (newcolor, newsize) => {
+    let url = `${process.env.HOSTING_NAME}/product/${varients[newcolor][newsize]["slug"]}`;
+    router.push(url);
+  };
+
   // for getting the pinCode to city
 
   const CheckThePin = async () => {
@@ -52,30 +81,6 @@ const Slug = ({ product, varients }) => {
     setCityName(Name);
   };
 
-  useEffect(() => {
-    if (userPin == 0) {
-      setIsService(null);
-    }
-  }, [userPin]);
-
-  // fetching the data saved cart data
-  useLayoutEffect(() => {
-    const fetchData = async () => {
-      let f = await fetch(`${process.env.HOSTING_NAME}/api/getcartproducts`);
-      let data = await f.json();
-
-      let result = data.map((data) => data.slug);
-
-      setSavedProducts(result);
-    };
-    fetchData();
-  }, [router.query]);
-
-  const GetNewVarient = async (newcolor, newsize) => {
-    let url = `${process.env.HOSTING_NAME}/product/${varients[newcolor][newsize]["slug"]}`;
-    window.location = url;
-  };
-
   const BUY_THE_PRODUCT = () => {
     if (user) {
       localStorage.setItem(
@@ -90,8 +95,6 @@ const Slug = ({ product, varients }) => {
       router.push("/login");
     }
   };
-
-  console.log("name", process.env.NEXT_PUBLIC_ITEMFORBUY);
 
   // for set the product to cart
 

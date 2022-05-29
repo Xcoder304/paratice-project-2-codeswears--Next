@@ -22,7 +22,6 @@ const Checkout = () => {
     email: "",
     phonenumber: "",
     pincode: "",
-    cityName: "",
     address: "",
   });
   let [userDetails, setuserDetails] = useState({
@@ -30,9 +29,9 @@ const Checkout = () => {
     email: "",
     phonenumber: "",
     pincode: "",
-    cityName: "",
     address: "",
   });
+  const [cityName, setcityName] = useState("");
   const [isServiceAvailable, setisServiceAvailable] = useState(null);
   const [rerender, setRerender] = useState(false);
 
@@ -173,45 +172,65 @@ const Checkout = () => {
     }, 1000);
   };
 
-  const fetchData = async () => {
-    const f = await fetch(`${process.env.HOSTING_NAME}/api/pincode`);
-    const data = await f.json();
-    let Name = null;
-    const res = data.map((data) => {
-      return data.code;
-    });
+  const haddlePincode = async (e) => {
+    setuserDetails({ ...userDetails, pincode: e.target.value });
 
-    if (res.includes(parseInt(userDetails.pincode))) {
+    let f = await fetch(`${process.env.HOSTING_NAME}/api/pincode`);
+    let pindata = await f.json();
+    console.log(pindata);
+
+    if (Object.keys(pindata).includes(e.target.value)) {
       setisServiceAvailable(true);
+      setcityName(pindata[e.target.value][0]);
     } else {
       setisServiceAvailable(false);
+      setcityName("");
+    }
+    if (e.target.value == "") {
+      setisServiceAvailable(null);
+      setcityName("");
     }
 
-    res.forEach((item) => {
-      if (item == userDetails.pincode) {
-        data.filter((x) => {
-          if (x.code == userDetails.pincode) {
-            return (Name = x.name);
-          }
-        });
-      }
-    });
-    setuserDetails({ ...userDetails, cityName: Name });
+    // setTimeout(() => {
+    //   if (code.includes(parseInt(e.target.value))) {
+    //     setisServiceAvailable(true);
+    //     let name = pindata.filter((x) => {
+    //       if (x.code == e.target.value) {
+    //         return x.name;
+    //       }
+    //     });
+    //     setuserDetails({
+    //       ...userDetails,
+    //       cityName: name.map((data) => data.name),
+    //     });
+    //   } else {
+    //     setisServiceAvailable(false);
+    //   }
+
+    //   if (e.target.value == "") {
+    //     setisServiceAvailable(null);
+    //     setuserDetails({ ...userDetails, cityName: "" });
+    //   }
+    // }, 1000);
   };
 
   const PROCEED_TO_PAY = (e) => {
     e.preventDefault();
 
-    fetchData();
-
-    setTimeout(() => {
-      if (isServiceAvailable && userDetails.cityName) {
-        setshowPopup(true);
-      }
-    }, 1000);
+    if (isServiceAvailable && cityName) {
+      setshowPopup(true);
+    } else {
+      toast.error(`Sorry We Cant deliver this product to your city right now`, {
+        position: "bottom-left",
+        autoClose: 1000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   };
-
-  console.log(userDetails.cityName, isServiceAvailable);
 
   return itemforbuy == null ? (
     <h4 className="font-bold text-gray-800 text-2xl mx-10 my-2 capitalize select-none py-28">
@@ -223,6 +242,7 @@ const Checkout = () => {
         <CheckoutPopUp
           setshowPopup={setshowPopup}
           userDetails={userDetails}
+          cityName={cityName}
           itemforbuy={itemforbuy}
           totalPrice={totalPrice}
           ResetuserDetails={ResetuserDetails}
@@ -389,24 +409,20 @@ const Checkout = () => {
                 className="mb-3 block px-2.5 py-4 w-full text-sm placeholder:text-[13px] text-gray-900 bg-gr.ay-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 value={userDetails.pincode}
                 name="pincode"
-                onChange={(e) =>
-                  setuserDetails({ ...userDetails, pincode: e.target.value })
-                }
+                onChange={haddlePincode}
                 autoComplete={"off"}
               />
-              <div className="text-left w-full absolute -bottom-3 left-0 select-none">
+              <div className="text-left w-full absolute -bottom-3 left-0 select-none ">
                 {isServiceAvailable ? (
-                  <p className="text-green-600 capitalize font-base">
-                    this product is aviable in {userDetails.cityName}
+                  <p className="text-green-600 capitalize font-base text-[15px]">
+                    this product is aviable in {cityName}
                   </p>
                 ) : isServiceAvailable == null ? (
                   ""
                 ) : (
-                  <p className="text-red-600 capitalize font-base">
+                  <p className="text-red-600 capitalize font-base text-[15px]">
                     sorry we cant devlivey this project in{" "}
-                    {userDetails.cityName
-                      ? userDetails.cityName
-                      : "in your city"}
+                    {cityName ? cityName : "in your city"}
                   </p>
                 )}
               </div>
