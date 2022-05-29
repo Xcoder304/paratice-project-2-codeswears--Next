@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 
 const CartSchema = new Schema(
   {
+    email: { type: String, required: true },
     title: { type: String, required: true },
     slug: { type: String, required: true, unique: true },
     desc: { type: String, required: true },

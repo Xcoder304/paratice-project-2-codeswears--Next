@@ -11,7 +11,6 @@ const CheckoutPopUp = ({
   cityName,
   itemforbuy,
   totalPrice,
-  ResetuserDetails,
 }) => {
   let [cardNumber, setcardNumber] = useState("");
   let [nameonCard, setnameonCard] = useState("");

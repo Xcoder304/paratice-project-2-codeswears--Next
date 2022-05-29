@@ -1,28 +1,41 @@
 import { useLayoutEffect, useState } from "react";
 import { AiFillDelete, AiOutlineMinus } from "react-icons/ai";
 import { MdOutlineAdd } from "react-icons/md";
-import { setItemForBuy } from "../Redux/features/AllGlobalStates";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useDispatch } from "react-redux";
-import mongoose from "mongoose";
 
-const Checkout = ({ data }) => {
-  const [Product, setProduct] = useState(data);
+const Checkout = () => {
+  const [Product, setProduct] = useState([]);
   const [iteminfo, setiteminfo] = useState({});
   const [getTotalItem, setTotalItem] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   let userValue;
-
   const router = useRouter();
-  const dispatch = useDispatch();
 
   if (typeof window !== "undefined") {
     userValue = localStorage.getItem("token");
   }
-
   // ****Effects**************
+  useLayoutEffect(() => {
+    const fetchData = async () => {
+      let f = await fetch(`${process.env.HOSTING_NAME}/api/getcartproducts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: localStorage.getItem("token") }),
+      });
+      let res = await f.json();
+      setProduct(res.products);
+    };
+
+    if (!localStorage.getItem("token")) {
+      router.push("/");
+    } else {
+      fetchData();
+    }
+  }, []);
 
   // rediecting the user
   useLayoutEffect(() => {
@@ -292,21 +305,5 @@ const Checkout = ({ data }) => {
     </div>
   );
 };
-
-export async function getServerSideProps(context) {
-  if (!mongoose.connections[0].readyState) {
-    await mongoose.connect(process.env.MONGO_URI);
-  }
-
-  let fetchproducts = await fetch(
-    `${process.env.HOSTING_NAME}/api/getcartproducts`
-  );
-  let res = await fetchproducts.json();
-  // let products = await Cart.find();
-
-  return {
-    props: { data: res },
-  };
-}
 
 export default Checkout;

@@ -8,6 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/dist/client/router";
 import { BiArrowBack } from "react-icons/bi";
+import jsonwebtoken from "jsonwebtoken";
 
 const Slug = ({ product, varients }) => {
   const [userPin, setUserPin] = useState("");
@@ -113,7 +114,12 @@ const Slug = ({ product, varients }) => {
         });
       }
       if (!savedProducts.includes(product.slug)) {
+        let token = jsonwebtoken.verify(
+          localStorage.getItem("token"),
+          process.env.NEXT_PUBLIC_JWTS_SECRET
+        );
         const data = {
+          email: token.email,
           title: product.title,
           slug: product.slug,
           desc: product.desc,

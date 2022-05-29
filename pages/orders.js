@@ -1,5 +1,4 @@
 import React, { useState, useLayoutEffect } from "react";
-import { AiFillDelete } from "react-icons/ai";
 import { useRouter } from "next/dist/client/router";
 
 const Orders = () => {
@@ -27,15 +26,8 @@ const Orders = () => {
     }
   }, []);
 
-  // useLayoutEffect(() => {
-  //   if (Orders.length == 0) {
-  //     router.push(`${process.env.HOSTING_NAME}/`);
-  //   }
-  // }, [Orders]);
-
   return (
     <div className="w-full relative">
-      {/* {Orders.length ? ( */}
       {Orders.map((item) => {
         return item.productsInfo.map(
           (
@@ -108,15 +100,6 @@ const Orders = () => {
                       {userSelectedQty}
                     </span>
                   </div>
-
-                  {/* <form method="POST"> */}
-                  {/* <button
-                           type="submit"
-                           className="w-[50%] md:w-[100px] inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-3 focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
-                         >
-                           <AiFillDelete className="text-2xl m-auto" />
-                         </button>
-                         {/* </form> */}
                 </div>
               </div>
             );

@@ -17,13 +17,6 @@ const Checkout = () => {
   const [showPopup, setshowPopup] = useState(false);
 
   // state for user details
-  const [ResetuserDetails, setResetuserDetails] = useState({
-    name: "",
-    email: "",
-    phonenumber: "",
-    pincode: "",
-    address: "",
-  });
   let [userDetails, setuserDetails] = useState({
     name: "",
     email: "",
@@ -33,7 +26,6 @@ const Checkout = () => {
   });
   const [cityName, setcityName] = useState("");
   const [isServiceAvailable, setisServiceAvailable] = useState(null);
-  const [rerender, setRerender] = useState(false);
 
   // const dispatch = useDispatch();
   const router = useRouter();
@@ -177,7 +169,6 @@ const Checkout = () => {
 
     let f = await fetch(`${process.env.HOSTING_NAME}/api/pincode`);
     let pindata = await f.json();
-    console.log(pindata);
 
     if (Object.keys(pindata).includes(e.target.value)) {
       setisServiceAvailable(true);
@@ -190,28 +181,6 @@ const Checkout = () => {
       setisServiceAvailable(null);
       setcityName("");
     }
-
-    // setTimeout(() => {
-    //   if (code.includes(parseInt(e.target.value))) {
-    //     setisServiceAvailable(true);
-    //     let name = pindata.filter((x) => {
-    //       if (x.code == e.target.value) {
-    //         return x.name;
-    //       }
-    //     });
-    //     setuserDetails({
-    //       ...userDetails,
-    //       cityName: name.map((data) => data.name),
-    //     });
-    //   } else {
-    //     setisServiceAvailable(false);
-    //   }
-
-    //   if (e.target.value == "") {
-    //     setisServiceAvailable(null);
-    //     setuserDetails({ ...userDetails, cityName: "" });
-    //   }
-    // }, 1000);
   };
 
   const PROCEED_TO_PAY = (e) => {
@@ -245,7 +214,6 @@ const Checkout = () => {
           cityName={cityName}
           itemforbuy={itemforbuy}
           totalPrice={totalPrice}
-          ResetuserDetails={ResetuserDetails}
         />
       )}
       {itemforbuy.map(
