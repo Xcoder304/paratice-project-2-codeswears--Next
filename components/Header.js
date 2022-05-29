@@ -96,11 +96,13 @@ const Header = () => {
                       My Account
                     </a>
                   </li>
-                  <li className="item">
-                    <a className="rounded-t font-bold my-2 text-gray-700 capitalize hover:bg-slate-200 py-3 px-4 block whitespace-no-wrap cursor-pointer">
-                      My Orders
-                    </a>
-                  </li>
+                  <Link href={`${process.env.HOSTING_NAME}/orders`}>
+                    <li className="item">
+                      <a className="rounded-t font-bold my-2 text-gray-700 capitalize hover:bg-slate-200 py-3 px-4 block whitespace-no-wrap cursor-pointer">
+                        My Orders
+                      </a>
+                    </li>
+                  </Link>
                   <li className="item">
                     <a
                       className="rounded-t font-bold my-2 text-gray-700 capitalize hover:bg-slate-200 py-3 px-4 block whitespace-no-wrap cursor-pointer"

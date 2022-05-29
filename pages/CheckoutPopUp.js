@@ -1,6 +1,7 @@
 import React, { useLayoutEffect, useState } from "react";
 import Image from "next/image";
 import { MdClose } from "react-icons/md";
+import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -17,6 +18,8 @@ const CheckoutPopUp = ({
   let [cvv, setcvv] = useState("");
   let [TermsAndCondition, setTermsAndCondition] = useState(false);
   const [disableBtn, setdisabeBtn] = useState(true);
+
+  const router = useRouter();
 
   const CheckTheVal = (e) => {
     if (e.target.checked == true) {
@@ -56,7 +59,7 @@ const CheckoutPopUp = ({
       totalPrice: totalPrice,
     };
 
-    let f = await fetch(`${process.env.HOSTING_NAME}/api/order`, {
+    let f = await fetch(`${process.env.HOSTING_NAME}/api/addorder`, {
       method: "POST", // or 'PUT'
       headers: {
         "Content-Type": "application/json",
@@ -74,6 +77,15 @@ const CheckoutPopUp = ({
         draggable: true,
         progress: undefined,
       });
+      setcardNumber("");
+      setnameonCard("");
+      setExpirationdate("");
+      setcvv("");
+      setTermsAndCondition(false);
+
+      setTimeout(() => {
+        router.push(`${process.env.HOSTING_NAME}/orders`);
+      }, 500);
     } catch (err) {
       console.error("error", err);
     }
