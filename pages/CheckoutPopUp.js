@@ -18,7 +18,6 @@ const CheckoutPopUp = ({
   let [cvv, setcvv] = useState("");
   let [TermsAndCondition, setTermsAndCondition] = useState(false);
   const [disableBtn, setdisabeBtn] = useState(true);
-
   const router = useRouter();
 
   const CheckTheVal = (e) => {
@@ -48,7 +47,7 @@ const CheckoutPopUp = ({
     let randomID = Math.floor(Math.random() * new Date() * 10 * 100 * 20 * 30);
     const data = {
       orderId: randomID,
-      userDetails: { userDetails, cityName },
+      userDetails: { ...userDetails, cityName },
       cardDetails: {
         card_Number: cardNumber,
         Name_on_card: nameonCard,
@@ -86,6 +85,12 @@ const CheckoutPopUp = ({
       setTimeout(() => {
         router.push(`${process.env.HOSTING_NAME}/orders`);
       }, 500);
+
+      let fetchingRemove = await fetch(
+        `${process.env.HOSTING_NAME}/api/removeProductQty`
+      );
+      let response = await fetchingRemove.json();
+      console.log(response);
     } catch (err) {
       console.error("error", err);
     }

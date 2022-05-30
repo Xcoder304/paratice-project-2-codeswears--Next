@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect, useEffect } from "react";
 import { useRouter } from "next/dist/client/router";
 
 const Orders = () => {
@@ -6,7 +6,7 @@ const Orders = () => {
   const router = useRouter();
 
   //  getting all orders
-  useLayoutEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       let f = await fetch(`${process.env.HOSTING_NAME}/api/getorders`, {
         method: "POST",
@@ -16,6 +16,7 @@ const Orders = () => {
         body: JSON.stringify({ token: localStorage.getItem("token") }),
       });
       let res = await f.json();
+      console.log(res);
       setorders(res.orders);
     };
 

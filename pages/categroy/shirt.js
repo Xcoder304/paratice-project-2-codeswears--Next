@@ -1,10 +1,19 @@
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import mongoose from "mongoose";
 import Product from "../../modals/Product";
+import { useRouter } from "next/dist/client/router";
 
 const Shirt = ({ products }) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router.pathname !== "/checkout") {
+      localStorage.removeItem(process.env.NEXT_PUBLIC_ITEMFORBUY);
+    }
+  }, []);
+
   return (
     <section className="text-gray-600 body-font w-full">
       <div className="first-letter:py-20 py-10">

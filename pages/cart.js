@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, useEffect } from "react";
 import { AiFillDelete, AiOutlineMinus } from "react-icons/ai";
 import { MdOutlineAdd } from "react-icons/md";
 import { useRouter } from "next/router";
@@ -17,6 +17,12 @@ const Checkout = () => {
     userValue = localStorage.getItem("token");
   }
   // ****Effects**************
+  useEffect(() => {
+    if (router.pathname !== "/checkout") {
+      localStorage.removeItem(process.env.NEXT_PUBLIC_ITEMFORBUY);
+    }
+  }, []);
+
   useLayoutEffect(() => {
     const fetchData = async () => {
       let f = await fetch(`${process.env.HOSTING_NAME}/api/getcartproducts`, {

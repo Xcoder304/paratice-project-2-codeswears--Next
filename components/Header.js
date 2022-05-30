@@ -22,9 +22,15 @@ const Header = () => {
 
   useLayoutEffect(() => {
     const fetchData = async () => {
-      let f = await fetch(`${process.env.HOSTING_NAME}/api/getcartproducts`);
-      let data = await f.json();
-      settotalCartItems(data.length);
+      let f = await fetch(`${process.env.HOSTING_NAME}/api/getcartproducts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: localStorage.getItem("token") }),
+      });
+      let res = await f.json();
+      settotalCartItems(res.products.length);
     };
     fetchData();
   }, [router.query]);

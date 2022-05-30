@@ -2,7 +2,7 @@ import React, { useLayoutEffect } from "react";
 import { useEffect, useState } from "react";
 import mongoose from "mongoose";
 import Product from "../../modals/Product";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectuserVal } from "../../Redux/features/UserState";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,10 +17,16 @@ const Slug = ({ product, varients }) => {
   const [savedProducts, setSavedProducts] = useState(null);
   const user = useSelector(selectuserVal);
   const router = useRouter();
-  const dispatch = useDispatch();
 
   let [color, setcolor] = useState(product.color);
   let [size, setsize] = useState(product.size);
+
+  // *******effects*********
+  useEffect(() => {
+    if (router.pathname !== "/checkout") {
+      localStorage.removeItem(process.env.NEXT_PUBLIC_ITEMFORBUY);
+    }
+  }, []);
 
   useEffect(() => {
     setcolor(product.color);
@@ -36,15 +42,20 @@ const Slug = ({ product, varients }) => {
   // fetching the data saved cart data
   useLayoutEffect(() => {
     const fetchData = async () => {
-      let f = await fetch(`${process.env.HOSTING_NAME}/api/getcartproducts`);
-      let data = await f.json();
-
-      let result = data.map((data) => data.slug);
-
-      setSavedProducts(result);
+      let f = await fetch(`${process.env.HOSTING_NAME}/api/getcartproducts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: localStorage.getItem("token") }),
+      });
+      let res = await f.json();
+      setSavedProducts(res.products);
     };
     fetchData();
   }, [router.query]);
+
+  console.log(savedProducts);
 
   const GetNewVarient = async (newcolor, newsize) => {
     let url = `${process.env.HOSTING_NAME}/product/${varients[newcolor][newsize]["slug"]}`;
@@ -52,7 +63,6 @@ const Slug = ({ product, varients }) => {
   };
 
   // for getting the pinCode to city
-
   const CheckThePin = async () => {
     // fetching the api
     const f = await fetch(`${process.env.HOSTING_NAME}/api/pincode`);
@@ -88,8 +98,6 @@ const Slug = ({ product, varients }) => {
         `${process.env.NEXT_PUBLIC_ITEMFORBUY}`,
         JSON.stringify([{ ...product, userSelectedQty: 1 }])
       );
-      // dispatch(clearItemForBuy());
-      // dispatch(setSingalItemForBuy(product));
       router.push("/checkout");
     }
     if (user == null) {
@@ -98,11 +106,12 @@ const Slug = ({ product, varients }) => {
   };
 
   // for set the product to cart
-
   const ADD_TO_CART = async (e) => {
     e.preventDefault();
     if (user) {
-      if (savedProducts.includes(product.slug)) {
+      let slugs = savedProducts.map((data) => data.slug);
+
+      if (slugs.includes(product.slug)) {
         toast.error("Product already exist in cart", {
           position: "bottom-left",
           autoClose: 1000,
@@ -113,7 +122,7 @@ const Slug = ({ product, varients }) => {
           progress: undefined,
         });
       }
-      if (!savedProducts.includes(product.slug)) {
+      if (!slugs.includes(product.slug)) {
         let token = jsonwebtoken.verify(
           localStorage.getItem("token"),
           process.env.NEXT_PUBLIC_JWTS_SECRET
