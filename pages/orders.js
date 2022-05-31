@@ -16,7 +16,6 @@ const Orders = () => {
         body: JSON.stringify({ token: localStorage.getItem("token") }),
       });
       let res = await f.json();
-      console.log(res);
       setorders(res.orders);
     };
 

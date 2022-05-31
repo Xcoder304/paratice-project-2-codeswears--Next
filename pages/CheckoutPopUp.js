@@ -100,7 +100,6 @@ const CheckoutPopUp = ({
         }
       );
       let response = await fetchingRemove.json();
-      console.log(response);
     } catch (err) {
       console.error("error", err);
     }

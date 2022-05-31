@@ -34,7 +34,7 @@ const Slug = ({ product, varients }) => {
   }, [router.query]);
 
   useEffect(() => {
-    if (userPin == 0) {
+    if (userPin == "" || userPin == 0) {
       setIsService(null);
     }
   }, [userPin]);
@@ -55,8 +55,6 @@ const Slug = ({ product, varients }) => {
     fetchData();
   }, [router.query]);
 
-  console.log(savedProducts);
-
   const GetNewVarient = async (newcolor, newsize) => {
     let url = `${process.env.HOSTING_NAME}/product/${varients[newcolor][newsize]["slug"]}`;
     router.push(url);
@@ -64,32 +62,16 @@ const Slug = ({ product, varients }) => {
 
   // for getting the pinCode to city
   const CheckThePin = async () => {
-    // fetching the api
-    const f = await fetch(`${process.env.HOSTING_NAME}/api/pincode`);
-    const data = await f.json();
-    let Name = null;
-    const res = data.map((data) => {
-      return data.code;
-    });
+    let f = await fetch(`${process.env.HOSTING_NAME}/api/pincode`);
+    let pindata = await f.json();
 
-    // changing the state if the user entered pin matches the city pin code.
-    if (res.includes(parseInt(userPin))) {
+    if (Object.keys(pindata).includes(userPin)) {
       setIsService(true);
+      setCityName(pindata[userPin][0]);
     } else {
       setIsService(false);
+      setCityName("");
     }
-
-    // now if the user entered code matches to city pin code then get the city Name
-    res.forEach((item) => {
-      if (item == userPin) {
-        data.filter((x) => {
-          if (x.code == userPin) {
-            return (Name = x.name);
-          }
-        });
-      }
-    });
-    setCityName(Name);
   };
 
   const BUY_THE_PRODUCT = () => {
