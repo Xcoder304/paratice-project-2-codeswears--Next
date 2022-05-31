@@ -1,17 +1,18 @@
 import { useState, useLayoutEffect } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
-import Link from "next/link";
-import Image from "next/image";
 import { selectuserVal, setUserVal } from "../Redux/features/UserState";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/dist/client/router";
 import { FaUser } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Link from "next/link";
+import Image from "next/image";
 
 const Header = () => {
   const user = useSelector(selectuserVal);
   const [totalCartItems, settotalCartItems] = useState(0);
+  const [totalOrder, setTotalOrder] = useState(0);
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -21,7 +22,7 @@ const Header = () => {
   };
 
   useLayoutEffect(() => {
-    const fetchData = async () => {
+    const fetchTotalCartProducts = async () => {
       let f = await fetch(`${process.env.HOSTING_NAME}/api/getcartproducts`, {
         method: "POST",
         headers: {
@@ -32,7 +33,21 @@ const Header = () => {
       let res = await f.json();
       settotalCartItems(res.products.length);
     };
-    fetchData();
+
+    const fetchTotalOrders = async () => {
+      let f = await fetch(`${process.env.HOSTING_NAME}/api/getorders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: localStorage.getItem("token") }),
+      });
+      let res = await f.json();
+      setTotalOrder(res.orders.length);
+    };
+
+    fetchTotalCartProducts();
+    fetchTotalOrders();
   }, [router.query]);
 
   return (
@@ -103,10 +118,14 @@ const Header = () => {
                     </a>
                   </li>
                   <Link href={`${process.env.HOSTING_NAME}/orders`}>
-                    <li className="item">
+                    <li className="item relative">
                       <a className="rounded-t font-bold my-2 text-gray-700 capitalize hover:bg-slate-200 py-3 px-4 block whitespace-no-wrap cursor-pointer">
                         My Orders
                       </a>
+
+                      <span className="w-5 h-5 rounded-full bg-red-600 text-white absolute right-6 top-1 text-center leading-5 text-[14px]">
+                        {totalOrder}
+                      </span>
                     </li>
                   </Link>
                   <li className="item">

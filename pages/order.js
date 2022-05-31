@@ -44,18 +44,23 @@ const MyOrder = ({ order }) => {
               <span className="text-gray-500">Color</span>
               <span className="ml-auto text-gray-900">{product?.color}</span>
             </div>
-            <div className="flex border-t border-gray-200 py-2">
-              <span className="text-gray-500">Size</span>
-              <span className="ml-auto text-gray-900">{product?.size}</span>
-            </div>
+            {product?.size && (
+              <div className="flex border-t border-gray-200 py-2">
+                <span className="text-gray-500">Size</span>
+                <span className="ml-auto text-gray-900">{product?.size}</span>
+              </div>
+            )}
             <div className="flex border-t border-b mb-6 border-gray-200 py-2">
               <span className="text-gray-500">Quantity</span>
               <span className="ml-auto text-gray-900">
                 {product?.userSelectedQty}
               </span>
             </div>
-            <div className="flex">
-              <span className="title-font font-medium text-2xl text-gray-900">
+            <div className="flex items-center">
+              <span className="text-gray-700 font-semibold capitalize text-xl">
+                total price
+              </span>
+              <span className="title-font ml-3 font-medium text-2xl text-[#c5b522] select-none">
                 ${Myorder?.totalPrice}
               </span>
               <button className="flex ml-auto font-bold bg-[#1a1818] text-white mx-5 py-2 px-6 rounded-md ease-in transition-opacity hover:opacity-80 select-none">
