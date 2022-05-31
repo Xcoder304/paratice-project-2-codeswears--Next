@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import Image from "next/image";
 import { MdClose } from "react-icons/md";
 import { useRouter } from "next/router";
@@ -86,8 +86,18 @@ const CheckoutPopUp = ({
         router.push(`${process.env.HOSTING_NAME}/orders`);
       }, 500);
 
+      // removing the product qty
       let fetchingRemove = await fetch(
-        `${process.env.HOSTING_NAME}/api/removeProductQty`
+        `${process.env.HOSTING_NAME}/api/removeProductQty`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            allproducts: itemforbuy,
+          }),
+        }
       );
       let response = await fetchingRemove.json();
       console.log(response);

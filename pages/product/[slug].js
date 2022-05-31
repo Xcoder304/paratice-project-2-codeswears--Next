@@ -364,18 +364,29 @@ const Slug = ({ product, varients }) => {
                 </div>
               )}
             </div>
-            <div className="w-full my-1">
-              <span className="font-medium text-gray-800 capitalize select-none text-[17px]">
-                available quantity
-              </span>
-              <span
-                className={`font-bold ml-3 ${
-                  product?.availableQty > 4 ? "text-blue-600" : "text-red-600"
-                } select-none text-[17px]`}
-              >
-                ({product?.availableQty})
-              </span>
-            </div>
+            {product?.availableQty == 0 ? (
+              <div className="w-full my-1">
+                <span className="font-medium text-red-600 capitalize select-none text-[20px]">
+                  Out of stock
+                </span>
+              </div>
+            ) : (
+              <div className="w-full my-1">
+                <span className="font-medium text-gray-800 capitalize select-none text-[17px]">
+                  available quantity
+                </span>
+
+                {product?.availableQty < 5 ? (
+                  <span className="font-bold ml-3 text-red-600 capitalize select-none text-[17px]">
+                    Only {product?.availableQty} left
+                  </span>
+                ) : (
+                  <span className="font-bold ml-3 text-blue-600 capitalize select-none text-[17px]">
+                    ({product?.availableQty})
+                  </span>
+                )}
+              </div>
+            )}
             <div className="flex mt-2">
               <span className="title-font font-medium text-2xl text-gray-900 select-none">
                 ${product?.price}
@@ -383,7 +394,11 @@ const Slug = ({ product, varients }) => {
 
               <div className="flex ml-auto gap-1">
                 <button
-                  className="flex text-white bg-[#1a1818] border-0 py-2 px-6 focus:outline-none hover:opacity-80 rounded"
+                  className={`flex text-white bg-[#1a1818] border-0 py-2 px-6 focus:outline-none hover:opacity-80 rounded ${
+                    product?.availableQty == 0
+                      ? "pointer-events-none opacity-40"
+                      : ""
+                  }`}
                   onClick={BUY_THE_PRODUCT}
                 >
                   Buy Now
@@ -392,7 +407,11 @@ const Slug = ({ product, varients }) => {
                 <form onSubmit={ADD_TO_CART} method="POST">
                   <button
                     type="submit"
-                    className="flex text-white bg-[#1a1818] border-0 py-2 px-6 focus:outline-none hover:opacity-80 rounded"
+                    className={`flex text-white bg-[#1a1818] border-0 py-2 px-6 focus:outline-none hover:opacity-80 rounded ${
+                      product?.availableQty == 0
+                        ? "pointer-events-none opacity-40"
+                        : ""
+                    }`}
                     // onClick={() => ADD_TO_CART(product._id)}
                   >
                     Add To Cart

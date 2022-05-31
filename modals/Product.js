@@ -14,7 +14,7 @@ const ProductSchema = new Schema(
     size: { type: String },
     color: { type: String },
     price: { type: Number, required: true },
-    availableQty: { type: String, required: true },
+    availableQty: { type: Number, required: true },
     userSelectedQty: { type: Number, required: true },
   },
   { timestamps: true }
