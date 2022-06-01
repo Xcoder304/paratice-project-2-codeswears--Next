@@ -1,5 +1,5 @@
 import React from "react";
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, useEffect } from "react";
 import { AiFillDelete, AiOutlineMinus } from "react-icons/ai";
 import { MdOutlineAdd } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
@@ -15,6 +15,7 @@ const Checkout = () => {
   const [getTotalItem, setTotalItem] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [showPopup, setshowPopup] = useState(false);
+  const [user, setuser] = useState(null);
 
   // state for user details
   let [userDetails, setuserDetails] = useState({
@@ -33,6 +34,38 @@ const Checkout = () => {
   const RedirectBack = () => {
     router.back();
   };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      let f = await fetch(
+        `${process.env.HOSTING_NAME}/api/myaccountapis/getuser`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token: localStorage.getItem("token") }),
+        }
+      );
+      let res = await f.json();
+      setuser(res.user);
+    };
+
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      setuserDetails({
+        ...userDetails,
+        name: user.name,
+        email: user.email,
+        phonenumber: user.phonenumber,
+        pincode: user.pincode,
+        address: user.address,
+      });
+    }
+  }, [user]);
 
   useLayoutEffect(() => {
     if (localStorage.getItem(`${process.env.NEXT_PUBLIC_ITEMFORBUY}`)) {

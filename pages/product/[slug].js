@@ -370,9 +370,11 @@ const Slug = ({ product, varients }) => {
               </div>
             )}
             <div className="flex mt-2">
-              <span className="title-font font-medium text-2xl text-gray-900 select-none">
-                ${product?.price}
-              </span>
+              {!product?.availableQty == 0 && (
+                <span className="title-font font-medium text-2xl text-gray-900 select-none">
+                  ${product?.price}
+                </span>
+              )}
 
               <div className="flex ml-auto gap-1">
                 <button
