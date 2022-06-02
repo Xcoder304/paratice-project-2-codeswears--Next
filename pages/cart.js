@@ -206,7 +206,7 @@ const Checkout = () => {
                     </div>
 
                     {/*  */}
-                    <div className="sec2 w-full md:w-[12%] text-center my-2">
+                    <div className="sec2 w-full md:w-[23.3%] text-left my-4 px-3">
                       <span className="font-bold text-[#c5b522] select-none">
                         ${price}
                       </span>
@@ -216,7 +216,7 @@ const Checkout = () => {
                       >
                         <button
                           type="submit"
-                          className="inline-flex items-center bg-gray-100 border-0 py-2 px-4 w-[60%] focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
+                          className="inline-flex items-center bg-gray-100 border-0 md:py-2 py-3 px-4 w-[30%] md:w-[60%] focus:outline-none hover:bg-gray-200 rounded text-base cursor-pointer"
                         >
                           <AiFillDelete className="text-2xl m-auto" />
                         </button>
@@ -242,7 +242,7 @@ const Checkout = () => {
                       </button>
                     </div>
 
-                    <div className="sec4 w-full md:w-[23.3%]  flex items-center">
+                    <div className="sec4 w-full mt-3 md:w-[23.3%]  flex items-center">
                       <button
                         className="w-full font-bold bg-[#1a1818] text-white py-[7px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none"
                         onClick={() => BUY_SINGAL_THE_PRODUCT(_id || id)}
@@ -285,12 +285,12 @@ const Checkout = () => {
         </div>
         <div className="w-full mt-4 gap-4  flex items-center justify-center">
           <form onSubmit={CLEAR_THE_CART} method="POST" className="flex-1">
-            <button className="w-full font-bold bg-[#1a1818] text-white py-[8px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none">
+            <button className="w-full font-bold bg-[#1a1818] text-white py-[8px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none text-base">
               Clear The Cart
             </button>
           </form>
           <button
-            className="flex-1 font-bold bg-[#1a1818] text-white py-[8px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none"
+            className="flex-1 font-bold bg-[#1a1818] text-white py-[8px] rounded-md ease-in	 transition-opacity hover:opacity-80 select-none text-base"
             onClick={BUY_ALL_PRODUCTS}
           >
             Buy All Products

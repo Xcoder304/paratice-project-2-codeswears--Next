@@ -153,7 +153,7 @@ const Slug = ({ product, varients }) => {
   return (
     <section className="text-gray-600 body-font overflow-hidden">
       <div className="container px-5 py-24 mx-auto relative">
-        <div className="backbtn absolute left-0 top-5">
+        <div className="backbtn absolute left-3 top-5">
           <span
             className="flex items-center justify-center w-8 h-8 rounded-full bg-[rgba(0,0,0,0.7)] text-center cursor-pointer hover:opacity-80"
             onClick={() => router.back()}
@@ -369,7 +369,7 @@ const Slug = ({ product, varients }) => {
                 )}
               </div>
             )}
-            <div className="flex mt-2">
+            <div className="flex mt-2 flex-wrap gap-y-2">
               {!product?.availableQty == 0 && (
                 <span className="title-font font-medium text-2xl text-gray-900 select-none">
                   ${product?.price}
@@ -416,7 +416,7 @@ const Slug = ({ product, varients }) => {
                 </svg>
               </button>
             </div>
-            <div className="flex flex-wrap items-center gap-4 my-3 relative">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 my-3 relative">
               <input
                 type="tel"
                 className="w-[70%] md:w-[50%] py-1 px-2 outline-none border-2 rounded-md border-[#63636365]"
@@ -425,7 +425,7 @@ const Slug = ({ product, varients }) => {
                 onChange={(e) => setUserPin(e.target.value)}
               />
               <button
-                className="text-white m-auto md:m-0 w-[80%] md:w-auto bg-[#1a1818] border-0 py-2 px-0 md:px-6 focus:outline-none hover:opacity-80 rounded"
+                className="text-white  md:m-0 w-[80%] md:w-auto bg-[#1a1818] border-0 py-2 px-0 md:px-6 focus:outline-none hover:opacity-80 rounded"
                 onClick={CheckThePin}
               >
                 Check The Service

@@ -67,6 +67,30 @@ const Checkout = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      let f = await fetch(`${process.env.HOSTING_NAME}/api/pincode`);
+      let pindata = await f.json();
+
+      console.log("FORM fun", userDetails.pincode);
+
+      if (Object.keys(pindata).includes(userDetails.pincode)) {
+        setisServiceAvailable(true);
+        setcityName(pindata[userDetails.pincode][0]);
+      } else {
+        setisServiceAvailable(false);
+        setcityName("");
+      }
+      if (userDetails.pincode == "") {
+        setisServiceAvailable(null);
+        setcityName("");
+      }
+    };
+    fetchData();
+  }, [userDetails.pincode]);
+
+  console.log("FUN", isServiceAvailable);
+
   useLayoutEffect(() => {
     if (localStorage.getItem(`${process.env.NEXT_PUBLIC_ITEMFORBUY}`)) {
       setitemforbuy(
@@ -197,25 +221,6 @@ const Checkout = () => {
     }, 1000);
   };
 
-  const haddlePincode = async (e) => {
-    setuserDetails({ ...userDetails, pincode: e.target.value });
-
-    let f = await fetch(`${process.env.HOSTING_NAME}/api/pincode`);
-    let pindata = await f.json();
-
-    if (Object.keys(pindata).includes(e.target.value)) {
-      setisServiceAvailable(true);
-      setcityName(pindata[e.target.value][0]);
-    } else {
-      setisServiceAvailable(false);
-      setcityName("");
-    }
-    if (e.target.value == "") {
-      setisServiceAvailable(null);
-      setcityName("");
-    }
-  };
-
   const PROCEED_TO_PAY = (e) => {
     e.preventDefault();
 
@@ -239,7 +244,7 @@ const Checkout = () => {
       no item founded
     </h4>
   ) : (
-    <div className="w-full  relative">
+    <div className="w-full relative">
       {showPopup && (
         <CheckoutPopUp
           setshowPopup={setshowPopup}
@@ -267,9 +272,9 @@ const Checkout = () => {
         ) => {
           return (
             <div className="product mb-5 px-2 pt-2" key={index}>
-              <div className="item w-[80%] mx-auto md:mx-0 flex p-2 items-center justify-center md:justify-between  flex-wrap bg-slate-50 rounded-md border-2 border-[#59c9259a]">
+              <div className="item md:w-[80%] w-[100%] flex-wrap mx-auto md:mx-0 flex p-2 items-center justify-center md:justify-between  md:flex-nowrap bg-slate-50 rounded-md border-2 border-[#59c9259a]">
                 <div
-                  className="sec1 flex items-start cursor-pointer mb-3"
+                  className="sec1 flex items-start cursor-pointer mb-3 pr-4"
                   onClick={() => router.push(`/product/${slug}`)}
                 >
                   <img
@@ -309,7 +314,7 @@ const Checkout = () => {
                   </div>
                 </div>
 
-                <div className="sec2 flex flex-col text-center mb-3">
+                <div className="sec2 flex flex-col text-center mb-3 pr-4">
                   <span className="capitalize text-gray-700 font-medium text-lg">
                     price
                   </span>
@@ -318,7 +323,7 @@ const Checkout = () => {
                   </span>
                 </div>
 
-                <div className="sec3 flex flex-col text-center mb-3 select-none">
+                <div className="sec3 flex flex-col text-center mb-3 select-none pr-4">
                   <span className="capitalize text-gray-700 font-medium text-lg">
                     product quantity
                   </span>
@@ -344,7 +349,7 @@ const Checkout = () => {
                 <form method="POST">
                   <button
                     type="submit"
-                    className="w-[50%] md:w-[100px] inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-3 focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
+                    className="w-[50px] md:w-[100px] inline-flex items-center bg-gray-100 border-[1px] border-[#1a181848] py-3 focus:outline-none hover:bg-gray-200 rounded text-base mx-4 cursor-pointer"
                     onClick={(e) => DELECT_PRODUCT(e, index)}
                   >
                     <AiFillDelete className="text-2xl m-auto" />
@@ -360,7 +365,7 @@ const Checkout = () => {
       <h4 className="mt-14 ml-3 select-none text-gray-700 font-bold text-4xl">
         Fill The Details for Order
       </h4>
-      <div className="form w-[70%] mt-3 px-4 mx-auto md:mx-0">
+      <div className="form md:w-[70%] w-[100%] mt-3 px-4 mx-auto md:mx-0">
         <form className="bg-slate-50 rounded-md border-2 py-4 px-5 border-[#8181811a] ">
           <div className="flex flex-col md:flex-row items-center w-[90%] gap-x-3 md:gap-x-3">
             <input
@@ -410,10 +415,12 @@ const Checkout = () => {
                 className="mb-3 block px-2.5 py-4 w-full text-sm placeholder:text-[13px] text-gray-900 bg-gr.ay-50 rounded-md border outline-none border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 value={userDetails.pincode}
                 name="pincode"
-                onChange={haddlePincode}
+                onChange={(e) =>
+                  setuserDetails({ ...userDetails, pincode: e.target.value })
+                }
                 autoComplete={"off"}
               />
-              <div className="text-left w-full absolute -bottom-3 left-0 select-none ">
+              <div className="text-left w-full md:absolute relative md:-bottom-3 md:left-0 select-none ">
                 {isServiceAvailable ? (
                   <p className="text-green-600 capitalize font-base text-[15px]">
                     this product is aviable in {cityName}

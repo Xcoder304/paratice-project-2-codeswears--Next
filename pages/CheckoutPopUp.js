@@ -106,7 +106,7 @@ const CheckoutPopUp = ({
   };
 
   return (
-    <div className="w-screen h-[200vw] fixed bg-[rgba(0,0,0,0.4)] z-10 backdrop-blur-sm flex items-start justify-center">
+    <div className="w-[100vw] h-[100vh] fixed top-0 bg-[rgba(0,0,0,0.4)] z-50 backdrop-blur-sm flex items-start justify-center">
       <div className="w-[90vw] md:w-[470px] h-auto bg-white border-0 rounded-[5px] mt-3 md:mt-1 pb-2 relative">
         <div
           className="w-10 h-10 absolute right-2 top-2 bg-gray-100 border-0 rounded-full flex items-center justify-center cursor-pointer"

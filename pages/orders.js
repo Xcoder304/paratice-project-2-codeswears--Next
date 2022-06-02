@@ -37,14 +37,14 @@ const Orders = () => {
             return (
               <div className="product mb-5 px-2 pt-2" key={index}>
                 <div
-                  className="item w-[100%] px-6 md:mx-0 flex p-2 items-center justify-center md:justify-between  flex-wrap bg-slate-50 rounded-md border-2 border-[#59c9259a]"
+                  className="item md:w-[80%] w-[100%] flex-wrap mx-auto md:mx-0 flex p-2 items-center justify-center md:justify-between  md:flex-nowrap bg-slate-50 rounded-md border-2 border-[#59c9259a]"
                   onClick={() =>
                     router.push(
                       `${process.env.HOSTING_NAME}/order?id=${item._id}`
                     )
                   }
                 >
-                  <div className="sec1 flex items-start cursor-pointer mb-3">
+                  <div className="sec1 flex items-start cursor-pointer mb-3 pr-6">
                     <img
                       className="object-contain object-contain select-none rounded-md w-[70px] h-auto"
                       src={img}
@@ -82,7 +82,7 @@ const Orders = () => {
                     </div>
                   </div>
 
-                  <div className="sec2 flex flex-col text-center mb-3">
+                  <div className="sec2 flex flex-col text-center mb-3 pr-6">
                     <span className="capitalize text-gray-700 font-medium text-lg">
                       price
                     </span>
@@ -91,7 +91,7 @@ const Orders = () => {
                     </span>
                   </div>
 
-                  <div className="sec3 flex flex-col text-center mb-3 select-none">
+                  <div className="sec3 flex flex-col text-center mb-3 select-none pl-6">
                     <span className="capitalize text-gray-700 font-medium text-lg">
                       product quantity
                     </span>

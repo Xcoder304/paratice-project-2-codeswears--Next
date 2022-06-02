@@ -15,7 +15,6 @@ const Myaccount = () => {
   const [password, setpassword] = useState("");
   const [newpassword, setnewpassword] = useState("");
   const [cnewpassword, setCnewPassword] = useState("");
-
   const [changePassHideBtn, setchangePassHideBtn] = useState(true);
 
   useEffect(() => {
